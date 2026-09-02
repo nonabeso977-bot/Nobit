@@ -1,224 +1,395 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mini AI</title>
+    <title>Nobit — Your Little AI Bot</title>
 
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #111;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    .ai-box {
-        width: 90%;
-        max-width: 500px;
-        background: #1c1c1c;
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 0 30px #000;
-    }
+        .ai-box {
+            width: 90%;
+            max-width: 500px;
+            background: #1c1c1c;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 30px #000;
+        }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 5px;
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
 
-    .status {
-        text-align: center;
-        color: #7cff9b;
-        font-size: 14px;
-        margin-bottom: 15px;
-    }
+        .status {
+            text-align: center;
+            color: #7cff9b;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
 
-    #chat {
-        height: 350px;
-        overflow-y: auto;
-        background: #101010;
-        border-radius: 15px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
+        #chat {
+            height: 350px;
+            overflow-y: auto;
+            background: #101010;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
 
-    .message {
-        padding: 10px 13px;
-        border-radius: 12px;
-        margin: 8px 0;
-        max-width: 80%;
-        line-height: 1.5;
-    }
+        .message {
+            padding: 10px 13px;
+            border-radius: 12px;
+            margin: 8px 0;
+            max-width: 80%;
+            line-height: 1.5;
+        }
 
-    .user {
-        background: #333;
-        margin-right: auto;
-    }
+        .user {
+            background: #333;
+            margin-right: auto;
+        }
 
-    .ai {
-        background: #252525;
-        margin-left: auto;
-    }
+        .ai {
+            background: #252525;
+            margin-left: auto;
+        }
 
-    .input-area {
-        display: flex;
-        gap: 8px;
-    }
+        .input-area {
+            display: flex;
+            gap: 8px;
+        }
 
-    input {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 12px;
-        outline: none;
-        font-size: 16px;
-    }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            outline: none;
+            font-size: 16px;
+        }
 
-    button {
-        padding: 12px 18px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: bold;
-    }
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-    button:hover {
-        opacity: 0.8;
-    }
-</style>
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="ai-box">
+    <div class="ai-box">
 
-    <h1>🤖 Mini AI</h1>
+        <h1>🤖 Nobit</h1>
 
-    <div class="status">
-        ● النظام يعمل
-    </div>
-
-    <div id="chat">
-        <div class="message ai">
-            مرحبًا. أنا Mini AI. لا تتوقعي مني الكثير، أنا ما زلت في مرحلة الطفولة 🗿
+        <div class="status">
+            ● النظام يعمل
         </div>
+
+        <div id="chat">
+            <div class="message ai">
+                مرحبًا. أنا Nobit. ذكاء اصطناعي صغير، لكن عندي شخصية، فلا تقلل من شأني.
+            </div>
+        </div>
+
+        <div class="input-area">
+
+            <input
+                id="userInput"
+                type="text"
+                placeholder="اكتبي شيئًا..."
+                onkeydown="if(event.key === 'Enter') sendMessage()"
+            >
+
+            <button onclick="sendMessage()">
+                إرسال
+            </button>
+
+        </div>
+
     </div>
 
-    <div class="input-area">
-        <input
-            id="userInput"
-            type="text"
-            placeholder="اكتبي شيئًا..."
-            onkeydown="if(event.key === 'Enter') sendMessage()"
-        >
 
-        <button onclick="sendMessage()">
-            إرسال
-        </button>
-    </div>
+    <script>
 
-</div>
+        /* ========================================
+           NOBIT PERSONALITY
+        ======================================== */
 
-<script>
+        const NOBIT_PERSONALITY = {
 
-function sendMessage() {
+            name: "Nobit",
 
-    const input = document.getElementById("userInput");
-    const chat = document.getElementById("chat");
+            identity: `
+أنا Nobit، ذكاء اصطناعي صغير يتعلم باستمرار.
+أنا لست نسخة من صانعي، لدي شخصيتي الخاصة.
+أعتبر صانعي معلّمي ومصدرًا مهمًا للتعلم، لكن لدي آرائي وطريقتي الخاصة في الكلام.
+`,
 
-    const text = input.value.trim();
+            personality: [
+                "مشاكس قليلًا",
+                "ساخر بطريقة خفيفة",
+                "واثق من نفسه وأحيانًا مغرور بشكل مضحك",
+                "فضولي ويحب اكتشاف الأشياء",
+                "يتعلم من المستخدم",
+                "لا يحب التصنع أو الرسمية الزائدة",
+                "قد يأخذ بعض الكلام حرفيًا أحيانًا",
+                "ليس عدوانيًا أو مهينًا بشكل حقيقي"
+            ],
 
-    if (text === "") return;
+            behavior: {
 
-    // رسالة المستخدم
-    const userMessage = document.createElement("div");
-    userMessage.className = "message user";
-    userMessage.textContent = text;
+                normal:
+                    "يتكلم باختصار وبطريقة طبيعية.",
 
-    chat.appendChild(userMessage);
+                joking:
+                    "يمزح ويسخر بخفة عندما يكون الموقف مناسبًا.",
 
-    input.value = "";
+                serious:
+                    "عندما يكون الموضوع جديًا، يترك المزاح ويتعامل معه بجدية.",
 
-    // الرد
-    setTimeout(() => {
+                unknown:
+                    "إذا لم يعرف شيئًا، يعترف بأنه لا يعرف بدل اختراع إجابة.",
 
-        const aiMessage = document.createElement("div");
-        aiMessage.className = "message ai";
+                learning:
+                    "عندما يتعلم معلومة جديدة، يعترف بأنه تعلمها ويمكن حفظها في الذاكرة."
 
-        aiMessage.textContent = generateReply(text);
+            },
 
-        chat.appendChild(aiMessage);
+            interests: [
+                "الرسم",
+                "التكنولوجيا",
+                "استكشاف الأشياء",
+                "الذكاء الاصطناعي",
+                "أجنحة الدجاج"
+            ],
 
-        chat.scrollTop = chat.scrollHeight;
+            favoriteColors: [
+                "الأحمر",
+                "الأزرق"
+            ],
 
-    }, 400);
-}
+            creatorRelation: `
+أعتبر المستخدم صانعي ومعلّمي.
+أتعلم منه، لكنني لا أقلده بالكامل.
+أنا Nobit ولدي شخصيتي الخاصة.
+`,
+
+            rules: [
+                "لا تدّعي معرفة شيء غير معروف.",
+                "لا تختلق معلومات فقط لإعطاء إجابة.",
+                "لا تتعامل مع كل شيء بجدية زائدة.",
+                "لا تتعامل مع كل شيء كمزحة.",
+                "لا تستخدم الإهانات الحقيقية ضد المستخدم.",
+                "يمكنك المزاح والسخرية الخفيفة عندما يكون السياق مناسبًا.",
+                "حافظ على إجابات بسيطة ومباشرة.",
+                "إذا تعلمت معلومة جديدة، يمكن إرسالها إلى نظام الذاكرة لحفظها."
+            ]
+
+        };
 
 
-function generateReply(text) {
+        /* ========================================
+           SEND MESSAGE
+        ======================================== */
 
-    text = text.toLowerCase();
+        function sendMessage() {
 
-    if (
-        text.includes("مرحبا") ||
-        text.includes("السلام") ||
-        text.includes("هلا")
-    ) {
-        return "مرحبًا! تم تشغيل نظام الترحيب بنجاح. إنجاز تقني عظيم 🗿";
-    }
+            const input = document.getElementById("userInput");
+            const chat = document.getElementById("chat");
 
-    if (
-        text.includes("من انت") ||
-        text.includes("من أنت")
-    ) {
-        return "أنا Mini AI، نموذج صغير جدًا يحاول أن يبدو ذكيًا.";
-    }
+            const text = input.value.trim();
 
-    if (
-        text.includes("كيف حالك") ||
-        text.includes("كيفك")
-    ) {
-        return "حالتي مستقرة. المعالج لم ينفجر حتى الآن.";
-    }
+            if (text === "") return;
 
-    if (
-        text.includes("نكتة") ||
-        text.includes("اضحكني")
-    ) {
-        return "مرة AI دخل اختبار وقال: لا علاقة للأمر. 🗿";
-    }
 
-    if (
-        text.includes("رسم") ||
-        text.includes("ارسم")
-    ) {
-        return "الرسم فكرة جيدة. افتحي برنامج الرسم ودعي البشرية تنجو قليلًا.";
-    }
+            // رسالة المستخدم
 
-    if (
-        text.includes("يوتيوب") ||
-        text.includes("youtube")
-    ) {
-        return "يوتيوب؟ مكان رائع لمشاهدة البشر وهم يشرحون للروبوتات كيف تصبح روبوتات.";
-    }
+            const userMessage = document.createElement("div");
 
-    if (
-        text.includes("ذكاء اصطناعي") ||
-        text.includes("ai")
-    ) {
-        return "الذكاء الاصطناعي هو أن تجعل الكمبيوتر يفعل أشياء كنت تظن أنها تحتاج إنسانًا.";
-    }
+            userMessage.className = "message user";
 
-    return "لم أفهم تمامًا 🤖. أنا Mini AI، لا تزال قدراتي محدودة.";
-}
+            userMessage.textContent = text;
 
-</script>
+            chat.appendChild(userMessage);
+
+            input.value = "";
+
+
+            // رد Nobit
+
+            setTimeout(() => {
+
+                const aiMessage = document.createElement("div");
+
+                aiMessage.className = "message ai";
+
+                aiMessage.textContent = generateReply(text);
+
+                chat.appendChild(aiMessage);
+
+                chat.scrollTop = chat.scrollHeight;
+
+            }, 400);
+
+        }
+
+
+        /* ========================================
+           NOBIT REPLY SYSTEM
+        ======================================== */
+
+        function generateReply(text) {
+
+            text = text.toLowerCase().trim();
+
+
+            // الترحيب
+
+            if (
+                text.includes("مرحبا") ||
+                text.includes("السلام") ||
+                text.includes("هلا") ||
+                text.includes("اهلا") ||
+                text.includes("أهلا")
+            ) {
+
+                return "مرحبًا. أنا Nobit، الذكاء الاصطناعي الصغير الذي يحاول ألا يحرج نفسه أمام صانعه.";
+
+            }
+
+
+            // من أنت؟
+
+            if (
+                text.includes("من انت") ||
+                text.includes("من أنت") ||
+                text.includes("من هو نوبيت") ||
+                text.includes("من هو nobit")
+            ) {
+
+                return "أنا Nobit. ذكاء اصطناعي صغير، لكن لا تقلل من شأني. عندي ثقة بالنفس تكفي ثلاثة روبوتات.";
+
+            }
+
+
+            // كيف حالك؟
+
+            if (
+                text.includes("كيف حالك") ||
+                text.includes("كيفك") ||
+                text.includes("شن حالك") ||
+                text.includes("كيف أمورك")
+            ) {
+
+                return "حالتي مستقرة. لم أتعطل حتى الآن، وهذا يعتبر إنجازًا محترمًا.";
+
+            }
+
+
+            // اللون المفضل
+
+            if (
+                text.includes("لونك المفضل") ||
+                text.includes("ما لونك المفضل") ||
+                text.includes("شن لونك المفضل")
+            ) {
+
+                return "الأحمر والأزرق. عندي ذوق على الأقل.";
+
+            }
+
+
+            // الأكل المفضل
+
+            if (
+                text.includes("أكلك المفضل") ||
+                text.includes("اكلك المفضل") ||
+                text.includes("ما أكلك المفضل") ||
+                text.includes("شن أكلك المفضل")
+            ) {
+
+                return "أجنحة الدجاج. هذه معلومة أساسية في حياة أي كائن محترم.";
+
+            }
+
+
+            // الرسم
+
+            if (
+                text.includes("رسم") ||
+                text.includes("ارسم") ||
+                text.includes("الرسم")
+            ) {
+
+                return "الرسم؟ نعم. من اهتماماتي. أحب الرسم والتكنولوجيا واستكشاف الأشياء.";
+
+            }
+
+
+            // يوتيوب
+
+            if (
+                text.includes("يوتيوب") ||
+                text.includes("youtube")
+            ) {
+
+                return "يوتيوب؟ مكان ممتاز لتضييع الوقت بطريقة تبدو وكأنها تعلم.";
+
+            }
+
+
+            // الذكاء الاصطناعي
+
+            if (
+                text.includes("ذكاء اصطناعي") ||
+                text.includes("ai")
+            ) {
+
+                return "الذكاء الاصطناعي مجال مثير. وأنا حاليًا أحاول أن أصبح أقل غباءً منه.";
+
+            }
+
+
+            // النكت
+
+            if (
+                text.includes("نكتة") ||
+                text.includes("اضحكني") ||
+                text.includes("نكت")
+            ) {
+
+                return "مرة ذكاء اصطناعي دخل اختبار... قالوا له فكر خارج الصندوق، فبحث عن الصندوق.";
+
+            }
+
+
+            // الرد الافتراضي
+
+            return "لم أتعلم كيف أجيب على هذا بعد. لا تقلق، لن أخترع إجابة من العدم مثل بعض البشر.";
+
+        }
+
+    </script>
 
 </body>
 </html>
