@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mini AI</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .ai-box {
+        width: 90%;
+        max-width: 500px;
+        background: #1c1c1c;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 0 30px #000;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .status {
+        text-align: center;
+        color: #7cff9b;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    #chat {
+        height: 350px;
+        overflow-y: auto;
+        background: #101010;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .message {
+        padding: 10px 13px;
+        border-radius: 12px;
+        margin: 8px 0;
+        max-width: 80%;
+        line-height: 1.5;
+    }
+
+    .user {
+        background: #333;
+        margin-right: auto;
+    }
+
+    .ai {
+        background: #252525;
+        margin-left: auto;
+    }
+
+    .input-area {
+        display: flex;
+        gap: 8px;
+    }
+
+    input {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 12px;
+        outline: none;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="ai-box">
+
+    <h1>🤖 Mini AI</h1>
+
+    <div class="status">
+        ● النظام يعمل
+    </div>
+
+    <div id="chat">
+        <div class="message ai">
+            مرحبًا. أنا Mini AI. لا تتوقعي مني الكثير، أنا ما زلت في مرحلة الطفولة 🗿
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input
+            id="userInput"
+            type="text"
+            placeholder="اكتبي شيئًا..."
+            onkeydown="if(event.key === 'Enter') sendMessage()"
+        >
+
+        <button onclick="sendMessage()">
+            إرسال
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+function sendMessage() {
+
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chat");
+
+    const text = input.value.trim();
+
+    if (text === "") return;
+
+    // رسالة المستخدم
+    const userMessage = document.createElement("div");
+    userMessage.className = "message user";
+    userMessage.textContent = text;
+
+    chat.appendChild(userMessage);
+
+    input.value = "";
+
+    // الرد
+    setTimeout(() => {
+
+        const aiMessage = document.createElement("div");
+        aiMessage.className = "message ai";
+
+        aiMessage.textContent = generateReply(text);
+
+        chat.appendChild(aiMessage);
+
+        chat.scrollTop = chat.scrollHeight;
+
+    }, 400);
+}
+
+
+function generateReply(text) {
+
+    text = text.toLowerCase();
+
+    if (
+        text.includes("مرحبا") ||
+        text.includes("السلام") ||
+        text.includes("هلا")
+    ) {
+        return "مرحبًا! تم تشغيل نظام الترحيب بنجاح. إنجاز تقني عظيم 🗿";
+    }
+
+    if (
+        text.includes("من انت") ||
+        text.includes("من أنت")
+    ) {
+        return "أنا Mini AI، نموذج صغير جدًا يحاول أن يبدو ذكيًا.";
+    }
+
+    if (
+        text.includes("كيف حالك") ||
+        text.includes("كيفك")
+    ) {
+        return "حالتي مستقرة. المعالج لم ينفجر حتى الآن.";
+    }
+
+    if (
+        text.includes("نكتة") ||
+        text.includes("اضحكني")
+    ) {
+        return "مرة AI دخل اختبار وقال: لا علاقة للأمر. 🗿";
+    }
+
+    if (
+        text.includes("رسم") ||
+        text.includes("ارسم")
+    ) {
+        return "الرسم فكرة جيدة. افتحي برنامج الرسم ودعي البشرية تنجو قليلًا.";
+    }
+
+    if (
+        text.includes("يوتيوب") ||
+        text.includes("youtube")
+    ) {
+        return "يوتيوب؟ مكان رائع لمشاهدة البشر وهم يشرحون للروبوتات كيف تصبح روبوتات.";
+    }
+
+    if (
+        text.includes("ذكاء اصطناعي") ||
+        text.includes("ai")
+    ) {
+        return "الذكاء الاصطناعي هو أن تجعل الكمبيوتر يفعل أشياء كنت تظن أنها تحتاج إنسانًا.";
+    }
+
+    return "لم أفهم تمامًا 🤖. أنا Mini AI، لا تزال قدراتي محدودة.";
+}
+
+</script>
+
+</body>
+</html>
