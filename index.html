@@ -238,19 +238,30 @@
 
             // رد Nobit
 
-            setTimeout(() => {
+setTimeout(() => {
 
-                const aiMessage = document.createElement("div");
+    const aiMessage = document.createElement("div");
 
-                aiMessage.className = "message ai";
+    aiMessage.className = "message ai";
 
-                aiMessage.textContent = generateReply(text);
+    // أولًا: نخلي دماغ Nobit يفهم الرسالة
+    const brainResponse = brainReply(text);
 
-                chat.appendChild(aiMessage);
+    // إذا الدماغ عرف ماذا يفعل، نستخدم رده
+    if (brainResponse) {
+        aiMessage.textContent = brainResponse;
+    } 
+    // إذا لم تكن الرسالة مرتبطة بالذاكرة،
+    // نرجع إلى نظام الرد العادي
+    else {
+        aiMessage.textContent = generateReply(text);
+    }
 
-                chat.scrollTop = chat.scrollHeight;
+    chat.appendChild(aiMessage);
 
-            }, 400);
+    chat.scrollTop = chat.scrollHeight;
+
+}, 400);
 
         }
 
