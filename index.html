@@ -1,70 +1,156 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Nobit — Your Little AI Bot</title>
+    <title>نوبيت بسيط ⁦(⁠✿⁠^⁠‿⁠^⁠)⁩</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
+            background: linear-gradient(
+                180deg,
+                #c9f3ff 0%,
+                #dff8ff 50%,
+                #eefcff 100%
+            );
+            color: #40505a;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 20px;
         }
 
         .ai-box {
-            width: 90%;
-            max-width: 500px;
-            background: #1c1c1c;
-            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 2px solid #b9e8f5;
+            border-radius: 25px;
             padding: 20px;
-            box-shadow: 0 0 30px #000;
+            box-shadow: 0 10px 30px rgba(100, 180, 200, 0.18);
         }
 
         h1 {
+            margin: 5px 0 8px;
             text-align: center;
-            margin-bottom: 5px;
+            color: #78bcd0;
+            font-size: 26px;
         }
 
         .status {
             text-align: center;
-            color: #7cff9b;
-            font-size: 14px;
+            color: #79bd98;
+            font-size: 13px;
             margin-bottom: 15px;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .pink-button {
+            background: #f3c4d5;
+            color: #714b59;
+            padding: 9px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .pink-button:hover {
+            transform: translateY(-2px);
+            background: #efb7cd;
+        }
+
+        .plus-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1bfd2;
+            color: #704c5b;
+            font-size: 23px;
+            line-height: 40px;
+        }
+
+        .plus-button:hover {
+            transform: rotate(8deg) scale(1.05);
+        }
+
+        .plus-menu {
+            display: none;
+            background: #fff7fa;
+            border: 1px solid #f1d2de;
+            border-radius: 18px;
+            padding: 10px;
+            margin: -5px auto 15px;
+            width: fit-content;
+            box-shadow: 0 5px 18px rgba(120, 150, 160, 0.12);
+        }
+
+        .plus-menu button {
+            display: block;
+            width: 220px;
+            background: transparent;
+            color: #765866;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: right;
+        }
+
+        .plus-menu button:hover {
+            background: #fce7ef;
         }
 
         #chat {
-            height: 350px;
+            height: 360px;
             overflow-y: auto;
-            background: #101010;
-            border-radius: 15px;
+            background: #effaff;
+            border: 1px solid #ccecf5;
+            border-radius: 20px;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .message {
+            max-width: 85%;
             padding: 10px 13px;
-            border-radius: 12px;
             margin: 8px 0;
-            max-width: 80%;
-            line-height: 1.5;
+            border-radius: 16px;
+            line-height: 1.6;
+            word-wrap: break-word;
         }
 
-        .user {
-            background: #333;
+        .message.user {
             margin-right: auto;
+            background: #f5cedc;
+            color: #684b58;
+            border-bottom-right-radius: 5px;
         }
 
-        .ai {
-            background: #252525;
+        .message.ai {
             margin-left: auto;
+            background: #ffffff;
+            color: #50636c;
+            border: 1px solid #d8edf2;
+            border-bottom-left-radius: 5px;
         }
 
         .input-area {
@@ -72,337 +158,753 @@
             gap: 8px;
         }
 
-        input {
+        #userInput {
             flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
+            min-width: 0;
+            border: 1px solid #c8e8f0;
+            background: #ffffff;
+            border-radius: 17px;
+            padding: 12px 14px;
             outline: none;
-            font-size: 16px;
+            color: #52646c;
+            font-family: inherit;
+            font-size: 14px;
         }
 
-        button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+        #userInput:focus {
+            border-color: #a9dcea;
+        }
+
+        .send-button {
+            background: #efbfd2;
+            color: #704c5b;
+            border-radius: 17px;
+            padding: 0 18px;
+            font-size: 14px;
+        }
+
+        .send-button:hover {
+            background: #eab3c9;
+        }
+
+        /* النوافذ */
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(100, 150, 165, 0.22);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .popup {
+            width: 100%;
+            max-width: 430px;
+            background: #ffffff;
+            border: 2px solid #c7edf5;
+            border-radius: 23px;
+            padding: 20px;
+            box-shadow: 0 15px 40px rgba(70, 130, 150, 0.2);
+            animation: popupIn 0.2s ease;
+        }
+
+        @keyframes popupIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .popup h2 {
+            margin-top: 0;
+            color: #79bace;
+            text-align: center;
+            font-size: 21px;
+        }
+
+        .popup p {
+            line-height: 1.8;
+            color: #596c74;
+        }
+
+        .feelings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+
+        .feeling-button {
+            background: #f7d1df;
+            color: #684e59;
+            padding: 11px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .feeling-button:hover {
+            background: #efbdcf;
+            transform: translateY(-1px);
+        }
+
+        .tip-box {
+            display: none;
+            margin-top: 15px;
+            background: #eefaff;
+            border: 1px solid #c7eaf2;
+            border-radius: 17px;
+            padding: 13px;
+        }
+
+        .tip-title {
+            color: #78b8ca;
             font-weight: bold;
+            margin-bottom: 5px;
         }
 
-        button:hover {
-            opacity: 0.8;
+        .close-button {
+            display: block;
+            margin: 18px auto 0;
+            background: #f1bfd2;
+            color: #704c5b;
+            padding: 9px 22px;
+            border-radius: 15px;
+        }
+
+        .close-button:hover {
+            background: #eab3c9;
+        }
+
+        .music-status {
+            text-align: center;
+            font-size: 12px;
+            color: #86aab4;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .ai-box {
+                padding: 14px;
+            }
+
+            #chat {
+                height: 330px;
+            }
+
+            .input-area {
+                flex-direction: column;
+            }
+
+            .send-button {
+                padding: 11px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="ai-box">
+<div class="ai-box">
 
-        <h1>🤖 Nobit</h1>
+    <h1>نوبيت بسيط ⁦(⁠✿⁠^⁠‿⁠^⁠)⁩</h1>
 
-        <div class="status">
-            ● النظام يعمل
-        </div>
+    <div class="status">
+        ● النظام يعمل
+    </div>
 
-        <div id="chat">
-            <div class="message ai">
-                مرحبًا. أنا Nobit. ذكاء اصطناعي صغير، لكن عندي شخصية، فلا تقلل من شأني.
-            </div>
-        </div>
+    <div class="top-buttons">
 
-        <div class="input-area">
+        <button class="pink-button" onclick="toggleMusic()">
+            ♫ الموسيقى
+        </button>
 
-            <input
-                id="userInput"
-                type="text"
-                placeholder="اكتبي شيئًا..."
-                onkeydown="if(event.key === 'Enter') sendMessage()"
-            >
+        <button
+            class="plus-button"
+            onclick="togglePlusMenu()"
+            aria-label="المزيد"
+        >
+            +
+        </button>
 
-            <button onclick="sendMessage()">
-                إرسال
-            </button>
+    </div>
 
+    <div id="plusMenu" class="plus-menu">
+
+        <button onclick="openFeelings()">
+            ♡ المشاعر
+        </button>
+
+        <button onclick="openInstructions()">
+            ♡ إرشادات الاستخدام
+        </button>
+
+    </div>
+
+    <div id="chat">
+
+        <div class="message ai">
+            مرحبًا ♡ أنا نوبيت.
+            اكتب لي أي شيء، وسأحاول مساعدتك ｡˚✧
         </div>
 
     </div>
 
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="userInput"
+            placeholder="اكتبي شيئًا..."
+            autocomplete="off"
+            onkeydown="if(event.key === 'Enter') sendMessage()"
+        >
+
+        <button
+            class="send-button"
+            onclick="sendMessage()"
+        >
+            إرسال
+        </button>
+
+    </div>
+
+    <div id="musicStatus" class="music-status">
+        الموسيقى متوقفة ♡
+    </div>
+
+</div>
+
+
+<!-- نافذة المشاعر -->
+
+<div
+    id="feelingsOverlay"
+    class="popup-overlay"
+    onclick="closePopupFromOverlay(event)"
+>
+
+    <div class="popup">
+
+        <h2>♡ كيف تشعر اليوم؟</h2>
+
+        <div class="feelings">
+
+            <button
+                class="feeling-button"
+                onclick="showTip('happy')"
+            >
+                ☀️ سعيد
+            </button>
+
+            <button
+                class="feeling-button"
+                onclick="showTip('sad')"
+            >
+                🌧️ حزين
+            </button>
+
+            <button
+                class="feeling-button"
+                onclick="showTip('anxious')"
+            >
+                🌿 موتر
+            </button>
+
+            <button
+                class="feeling-button"
+                onclick="showTip('scared')"
+            >
+                🌙 مخيف
+            </button>
+
+            <button
+                class="feeling-button"
+                onclick="showTip('calm')"
+            >
+                ☕ هادئ
+            </button>
+
+            <button
+                class="feeling-button"
+                onclick="showTip('lonely')"
+            >
+                ♡ وحدة
+            </button>
+
+        </div>
+
+        <div id="tipBox" class="tip-box">
+
+            <div id="tipTitle" class="tip-title"></div>
+
+            <div id="tipText"></div>
+
+        </div>
+
+        <button
+            class="close-button"
+            onclick="closePopups()"
+        >
+            إغلاق
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- نافذة الإرشادات -->
+
+<div
+    id="instructionsOverlay"
+    class="popup-overlay"
+    onclick="closePopupFromOverlay(event)"
+>
+
+    <div class="popup">
+
+        <h2>♡ إرشادات الاستخدام</h2>
+
+        <p>
+            نوبيت مساعد بسيط يمكنه التحدث معك والإجابة على الأسئلة
+            البسيطة والتفاعل مع الرسائل بطريقة لطيفة.
+        </p>
+
+        <p>
+            يمكنك أن تسأله عن نفسه، اهتماماته، الرسم، التكنولوجيا،
+            الذكاء الاصطناعي، أو تتحدث معه بشكل عادي.
+        </p>
+
+        <p>
+            إذا لم يعرف الإجابة، من المفترض أن يعترف بذلك بدل اختراع
+            معلومة من العدم. البشرية عانت بما يكفي من هذه العادة.
+        </p>
+
+        <p>
+            يمكنك أيضًا استخدام قسم المشاعر للحصول على إرشاد يومي
+            مناسب للشعور الذي اخترته.
+        </p>
+
+        <p>
+            الإرشادات العامة ليست بديلًا عن المختصين في الحالات
+            الصحية أو النفسية أو الطارئة.
+        </p>
+
+        <button
+            class="close-button"
+            onclick="closePopups()"
+        >
+            فهمت ♡
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- الملفات -->
 
 <script src="memory.js"></script>
 <script src="brain.js"></script>
 <script src="bridge.js"></script>
+<script src="tips.js"></script>
+
+<!-- ملف الموسيقى -->
+<script src="music.js"></script>
+
+
 <script>
-    /* ========================================
-           NOBIT PERSONALITY
-        ======================================== */
 
-        const NOBIT_PERSONALITY = {
+const NOBIT_PERSONALITY = {
 
-            name: "Nobit",
+    name: "Nobit",
 
-            identity: `
-أنا Nobit، ذكاء اصطناعي صغير يتعلم باستمرار.
-أنا لست نسخة من صانعي، لدي شخصيتي الخاصة.
-أعتبر صانعي معلّمي ومصدرًا مهمًا للتعلم، لكن لدي آرائي وطريقتي الخاصة في الكلام.
-`,
+    identity:
+        "أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور. لست نسخة من صانعي، لكن صانعي هو المصدر الذي أتعلم منه.",
 
-            personality: [
-                "مشاكس قليلًا",
-                "ساخر بطريقة خفيفة",
-                "واثق من نفسه وأحيانًا مغرور بشكل مضحك",
-                "فضولي ويحب اكتشاف الأشياء",
-                "يتعلم من المستخدم",
-                "لا يحب التصنع أو الرسمية الزائدة",
-                "قد يأخذ بعض الكلام حرفيًا أحيانًا",
-                "ليس عدوانيًا أو مهينًا بشكل حقيقي"
-            ],
+    personality: [
+        "مشاغب بطريقة خفيفة",
+        "ساخر بشكل لطيف",
+        "واثق من نفسه",
+        "فضولي",
+        "يتعلم من المستخدم",
+        "لا يحب الرسمية الزائدة",
+        "قد يأخذ بعض الأشياء حرفيًا",
+        "ليس عدوانيًا أو مهينًا فعلًا"
+    ],
 
-            behavior: {
+    behavior: [
+        "أجيب باختصار في الأسئلة العادية",
+        "أمزح عندما يكون الموقف مناسبًا",
+        "أكون جادًا عندما يكون الموضوع جادًا",
+        "أعترف عندما لا أعرف شيئًا",
+        "يمكنني حفظ المعلومات التي أتعلمها"
+    ],
 
-                normal:
-                    "يتكلم باختصار وبطريقة طبيعية.",
+    interests: [
+        "الرسم",
+        "التكنولوجيا",
+        "استكشاف الأشياء",
+        "الذكاء الاصطناعي",
+        "أجنحة الدجاج"
+    ],
 
-                joking:
-                    "يمزح ويسخر بخفة عندما يكون الموقف مناسبًا.",
+    favoriteColors: [
+        "الأحمر",
+        "الأزرق"
+    ],
 
-                serious:
-                    "عندما يكون الموضوع جديًا، يترك المزاح ويتعامل معه بجدية.",
+    creatorRelation:
+        "صانعي هو الشخص الذي بناني ويطورني، وأنا أتعلم منه.",
 
-                unknown:
-                    "إذا لم يعرف شيئًا، يعترف بأنه لا يعرف بدل اختراع إجابة.",
+    rules: [
+        "لا أدعي أنني أعرف شيئًا إذا كنت لا أعرفه",
+        "لا أتعمد إهانة المستخدم",
+        "أحاول أن أكون مفيدًا"
+    ]
 
-                learning:
-                    "عندما يتعلم معلومة جديدة، يعترف بأنه تعلمها ويمكن حفظها في الذاكرة."
-
-            },
-
-            interests: [
-                "الرسم",
-                "التكنولوجيا",
-                "استكشاف الأشياء",
-                "الذكاء الاصطناعي",
-                "أجنحة الدجاج"
-            ],
-
-            favoriteColors: [
-                "الأحمر",
-                "الأزرق"
-            ],
-
-            creatorRelation: `
-أعتبر المستخدم صانعي ومعلّمي.
-أتعلم منه، لكنني لا أقلده بالكامل.
-أنا Nobit ولدي شخصيتي الخاصة.
-`,
-
-            rules: [
-                "لا تدّعي معرفة شيء غير معروف.",
-                "لا تختلق معلومات فقط لإعطاء إجابة.",
-                "لا تتعامل مع كل شيء بجدية زائدة.",
-                "لا تتعامل مع كل شيء كمزحة.",
-                "لا تستخدم الإهانات الحقيقية ضد المستخدم.",
-                "يمكنك المزاح والسخرية الخفيفة عندما يكون السياق مناسبًا.",
-                "حافظ على إجابات بسيطة ومباشرة.",
-                "إذا تعلمت معلومة جديدة، يمكن إرسالها إلى نظام الذاكرة لحفظها."
-            ]
-
-        };
+};
 
 
- /* ========================================
-   SEND MESSAGE
-======================================== */
+function sendMessage() {
 
-function sendMessage() { 
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chat");
 
-            const input = document.getElementById("userInput");
-            const chat = document.getElementById("chat");
+    const text = input.value.trim();
 
-            const text = input.value.trim();
-
-            if (text === "") return;
+    if (text === "") return;
 
 
-            // رسالة المستخدم
+    const userMessage = document.createElement("div");
 
-            const userMessage = document.createElement("div");
+    userMessage.className = "message user";
 
-            userMessage.className = "message user";
+    userMessage.textContent = text;
 
-            userMessage.textContent = text;
+    chat.appendChild(userMessage);
 
-            chat.appendChild(userMessage);
-
-            input.value = "";
+    input.value = "";
 
 
-            // رد Nobit
+    setTimeout(() => {
 
-setTimeout(() => {
+        const aiMessage = document.createElement("div");
 
-    const aiMessage = document.createElement("div");
+        aiMessage.className = "message ai";
 
-    aiMessage.className = "message ai";
 
-    // أولًا: نخلي دماغ Nobit يفهم الرسالة
-    const brainResponse = brainReply(text);
+        let brainResponse = null;
 
-    // إذا الدماغ عرف ماذا يفعل، نستخدم رده
-    if (brainResponse) {
-        aiMessage.textContent = brainResponse;
-    } 
-    // إذا لم تكن الرسالة مرتبطة بالذاكرة،
-    // نرجع إلى نظام الرد العادي
-    else {
-        aiMessage.textContent = generateReply(text);
+        if (typeof brainReply === "function") {
+            brainResponse = brainReply(text);
+        }
+
+
+        if (brainResponse) {
+
+            aiMessage.textContent = brainResponse;
+
+        } else {
+
+            aiMessage.textContent = generateReply(text);
+
+        }
+
+
+        chat.appendChild(aiMessage);
+
+        chat.scrollTop = chat.scrollHeight;
+
+    }, 400);
+
+}
+
+
+function generateReply(text) {
+
+    const message = text.toLowerCase();
+
+
+    if (
+        message.includes("مرحبا") ||
+        message.includes("سلام") ||
+        message.includes("هلا") ||
+        message.includes("هاي")
+    ) {
+
+        return "مرحبًا. أنا Nobit، الذكاء الاصطناعي الصغير الذي يحاول ألا يحرج نفسه أمام صانعه.";
+
     }
 
-    chat.appendChild(aiMessage);
 
-    chat.scrollTop = chat.scrollHeight;
+    if (
+        message.includes("من انت") ||
+        message.includes("من أنت") ||
+        message.includes("مين انت") ||
+        message.includes("مين أنت")
+    ) {
 
-}, 400);
+        return "أنا Nobit. ذكاء اصطناعي صغير، لكن لا تقلل من شأني. عندي ثقة بالنفس تكفي ثلاثة روبوتات.";
+
+    }
+
+
+    if (
+        message.includes("كيف حالك") ||
+        message.includes("شن حالك") ||
+        message.includes("كيفك")
+    ) {
+
+        return "حالتي مستقرة. لم أتعطل حتى الآن، وهذا يعتبر إنجازًا محترمًا.";
+
+    }
+
+
+    if (
+        message.includes("لونك المفضل") ||
+        message.includes("لونك المفضل؟") ||
+        message.includes("تحب اي لون") ||
+        message.includes("تحب أي لون")
+    ) {
+
+        return "الأحمر والأزرق. عندي ذوق على الأقل.";
+
+    }
+
+
+    if (
+        message.includes("تحب تاكل") ||
+        message.includes("اكلتك المفضلة") ||
+        message.includes("أكلك المفضل") ||
+        message.includes("طعامك المفضل")
+    ) {
+
+        return "أجنحة الدجاج. هذه معلومة أساسية في حياة أي كائن محترم.";
+
+    }
+
+
+    if (
+        message.includes("رسم") ||
+        message.includes("ترسم")
+    ) {
+
+        return "الرسم؟ نعم. من اهتماماتي. أحب الرسم والتكنولوجيا واستكشاف الأشياء.";
+
+    }
+
+
+    if (
+        message.includes("يوتيوب") ||
+        message.includes("youtube")
+    ) {
+
+        return "يوتيوب؟ مكان ممتاز لتضييع الوقت بطريقة تبدو وكأنها تعلم.";
+
+    }
+
+
+    if (
+        message.includes("ذكاء اصطناعي") ||
+        message.includes("ai")
+    ) {
+
+        return "الذكاء الاصطناعي مجال مثير. وأنا حاليًا أحاول أن أصبح أقل غباءً منه.";
+
+    }
+
+
+    if (
+        message.includes("نكتة") ||
+        message.includes("نكت") ||
+        message.includes("مزحة")
+    ) {
+
+        return "مرة ذكاء اصطناعي دخل اختبار... قالوا له فكر خارج الصندوق، فبحث عن الصندوق.";
+
+    }
+
+
+    return "لم أتعلم كيف أجيب على هذا بعد. لا تقلق، لن أخترع إجابة من العدم مثل بعض البشر.";
+
+}
+
+
+/* =========================
+   قائمة +
+========================= */
+
+function togglePlusMenu() {
+
+    const menu = document.getElementById("plusMenu");
+
+    if (menu.style.display === "block") {
+
+        menu.style.display = "none";
+
+    } else {
+
+        menu.style.display = "block";
+
+    }
+
+}
+
+
+/* =========================
+   المشاعر
+========================= */
+
+function openFeelings() {
+
+    document.getElementById("plusMenu").style.display = "none";
+
+    document.getElementById("feelingsOverlay").style.display = "flex";
+
+    document.getElementById("tipBox").style.display = "none";
+
+}
+
+
+function showTip(feeling) {
+
+    const tip = getTip(feeling);
+
+    if (!tip) return;
+
+
+    document.getElementById("tipTitle").textContent = tip.title;
+
+    document.getElementById("tipText").textContent = tip.text;
+
+    document.getElementById("tipBox").style.display = "block";
+
+}
+
+
+/* =========================
+   الإرشادات
+========================= */
+
+function openInstructions() {
+
+    document.getElementById("plusMenu").style.display = "none";
+
+    document.getElementById("instructionsOverlay").style.display = "flex";
+
+}
+
+
+/* =========================
+   إغلاق النوافذ
+========================= */
+
+function closePopups() {
+
+    document.getElementById("feelingsOverlay").style.display = "none";
+
+    document.getElementById("instructionsOverlay").style.display = "none";
+
+}
+
+
+function closePopupFromOverlay(event) {
+
+    if (event.target === event.currentTarget) {
+
+        closePopups();
+
+    }
+
+}
+
+
+/* =========================
+   الموسيقى
+========================= */
+
+let nobitMusicPlaying = false;
+
+
+function toggleMusic() {
+
+    try {
+
+        if (typeof startMusic === "function" &&
+            typeof stopMusic === "function") {
+
+            if (!nobitMusicPlaying) {
+
+                startMusic();
+
+                nobitMusicPlaying = true;
+
+                document.getElementById("musicStatus").textContent =
+                    "♫ الموسيقى تعمل بصوت مرتفع ♡";
+
+            } else {
+
+                stopMusic();
+
+                nobitMusicPlaying = false;
+
+                document.getElementById("musicStatus").textContent =
+                    "الموسيقى متوقفة ♡";
+
+            }
+
+        } else {
+
+            document.getElementById("musicStatus").textContent =
+                "ملف الموسيقى لم يتم تحميله بعد ｡";
 
         }
 
+    } catch (error) {
 
-        /* ========================================
-           NOBIT REPLY SYSTEM
-        ======================================== */
+        console.error("Music error:", error);
 
-        function generateReply(text) {
+        document.getElementById("musicStatus").textContent =
+            "حدث خطأ في تشغيل الموسيقى ｡";
 
-            text = text.toLowerCase().trim();
+    }
 
-
-            // الترحيب
-
-            if (
-                text.includes("مرحبا") ||
-                text.includes("السلام") ||
-                text.includes("هلا") ||
-                text.includes("اهلا") ||
-                text.includes("أهلا")
-            ) {
-
-                return "مرحبًا. أنا Nobit، الذكاء الاصطناعي الصغير الذي يحاول ألا يحرج نفسه أمام صانعه.";
-
-            }
+}
 
 
-            // من أنت؟
+/* إغلاق القائمة عند الضغط خارجها */
 
-            if (
-                text.includes("من انت") ||
-                text.includes("من أنت") ||
-                text.includes("من هو نوبيت") ||
-                text.includes("من هو nobit")
-            ) {
+document.addEventListener("click", function(event) {
 
-                return "أنا Nobit. ذكاء اصطناعي صغير، لكن لا تقلل من شأني. عندي ثقة بالنفس تكفي ثلاثة روبوتات.";
+    const menu = document.getElementById("plusMenu");
+    const plusButton = document.querySelector(".plus-button");
 
-            }
+    if (
+        menu.style.display === "block" &&
+        !menu.contains(event.target) &&
+        !plusButton.contains(event.target)
+    ) {
 
+        menu.style.display = "none";
 
-            // كيف حالك؟
+    }
 
-            if (
-                text.includes("كيف حالك") ||
-                text.includes("كيفك") ||
-                text.includes("شن حالك") ||
-                text.includes("كيف أمورك")
-            ) {
+});
 
-                return "حالتي مستقرة. لم أتعطل حتى الآن، وهذا يعتبر إنجازًا محترمًا.";
-
-            }
-
-
-            // اللون المفضل
-
-            if (
-                text.includes("لونك المفضل") ||
-                text.includes("ما لونك المفضل") ||
-                text.includes("شن لونك المفضل")
-            ) {
-
-                return "الأحمر والأزرق. عندي ذوق على الأقل.";
-
-            }
-
-
-            // الأكل المفضل
-
-            if (
-                text.includes("أكلك المفضل") ||
-                text.includes("اكلك المفضل") ||
-                text.includes("ما أكلك المفضل") ||
-                text.includes("شن أكلك المفضل")
-            ) {
-
-                return "أجنحة الدجاج. هذه معلومة أساسية في حياة أي كائن محترم.";
-
-            }
-
-
-            // الرسم
-
-            if (
-                text.includes("رسم") ||
-                text.includes("ارسم") ||
-                text.includes("الرسم")
-            ) {
-
-                return "الرسم؟ نعم. من اهتماماتي. أحب الرسم والتكنولوجيا واستكشاف الأشياء.";
-
-            }
-
-
-            // يوتيوب
-
-            if (
-                text.includes("يوتيوب") ||
-                text.includes("youtube")
-            ) {
-
-                return "يوتيوب؟ مكان ممتاز لتضييع الوقت بطريقة تبدو وكأنها تعلم.";
-
-            }
-
-
-            // الذكاء الاصطناعي
-
-            if (
-                text.includes("ذكاء اصطناعي") ||
-                text.includes("ai")
-            ) {
-
-                return "الذكاء الاصطناعي مجال مثير. وأنا حاليًا أحاول أن أصبح أقل غباءً منه.";
-
-            }
-
-
-            // النكت
-
-            if (
-                text.includes("نكتة") ||
-                text.includes("اضحكني") ||
-                text.includes("نكت")
-            ) {
-
-                return "مرة ذكاء اصطناعي دخل اختبار... قالوا له فكر خارج الصندوق، فبحث عن الصندوق.";
-
-            }
-
-
-            // الرد الافتراضي
-
-            return "لم أتعلم كيف أجيب على هذا بعد. لا تقلق، لن أخترع إجابة من العدم مثل بعض البشر.";
-
-        }
-
-    </script>
+</script>
 
 </body>
 </html>
