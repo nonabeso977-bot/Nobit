@@ -7,6 +7,11 @@ const NobitBrain = {
 
     understand(text) {
 
+        const safety = globalThis.NobitSafety?.inspect(text);
+        if (safety && !safety.allowed) {
+            return { type: "safety_block", reply: safety.reply };
+        }
+
         const original = text.trim();
         const lower = original.toLowerCase();
 
