@@ -1,6 +1,6 @@
 // NOBIT BRAIN - Supabase Edge Function
 // Required Supabase secret: OPENAI_API_KEY
-// Optional secret: OPENAI_MODEL (defaults to gpt-6-astra)
+// Optional secret: OPENAI_MODEL (defaults to gpt-6.2-astra)
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const corsHeaders = {
@@ -73,7 +73,7 @@ serve(async (req) => {
     ];
 
     // Responses API with hosted web search: current Libyan facts can be checked against live sources.
-    const model = Deno.env.get("OPENAI_MODEL") || "gpt-6-astra";
+    const model = Deno.env.get("OPENAI_MODEL") || "gpt-6.2-astra";
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
