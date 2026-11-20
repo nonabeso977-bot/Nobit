@@ -14,21 +14,21 @@ function setupAudio() {
   if (audioContext) return;
   audioContext = new (window.AudioContext || window.webkitAudioContext)();
   masterGain = audioContext.createGain();
-  masterGain.gain.value = 0.12;
+  masterGain.gain.value = 0.065;
   masterGain.connect(audioContext.destination);
 }
 
 function makeDrone() {
   const now = audioContext.currentTime;
-  [55, 82.41, 110].forEach((frequency, index) => {
+  [55, 73.42, 110].forEach((frequency, index) => {
     const oscillator = audioContext.createOscillator();
     const toneGain = audioContext.createGain();
     const filter = audioContext.createBiquadFilter();
     oscillator.type = index === 1 ? "triangle" : "sine";
     oscillator.frequency.value = frequency;
     filter.type = "lowpass";
-    filter.frequency.value = 420;
-    toneGain.gain.value = index === 0 ? 0.10 : 0.045;
+    filter.frequency.value = 300;
+    toneGain.gain.value = index === 0 ? 0.045 : 0.022;
     oscillator.connect(filter);
     filter.connect(toneGain);
     toneGain.connect(masterGain);
@@ -47,11 +47,11 @@ function playOrbitalNote(frequency) {
   oscillator.frequency.setValueAtTime(frequency, now);
   oscillator.detune.setValueAtTime(-4, now);
   filter.type = "lowpass";
-  filter.frequency.value = 850;
+  filter.frequency.value = 520;
 
   toneGain.gain.setValueAtTime(0.0001, now);
-  toneGain.gain.linearRampToValueAtTime(0.11, now + 1.1);
-  toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 5.8);
+  toneGain.gain.linearRampToValueAtTime(0.035, now + 2.0);
+  toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 8.0);
 
   oscillator.connect(filter);
   filter.connect(toneGain);
@@ -74,7 +74,7 @@ function startMusic() {
     if (!musicPlaying) return;
     playOrbitalNote(orbitalNotes[noteIndex]);
     noteIndex = (noteIndex + 1) % orbitalNotes.length;
-  }, 3600);
+  }, 5200);
 }
 
 function stopMusic() {
@@ -94,7 +94,7 @@ function stopMusic() {
         try { node.stop(); node.disconnect(); } catch {}
       });
       if (audioContext && masterGain) {
-        masterGain.gain.setValueAtTime(0.12, audioContext.currentTime);
+        masterGain.gain.setValueAtTime(0.065, audioContext.currentTime);
       }
     }, 700);
   }
