@@ -83,7 +83,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model,
         input: messages,
-        tools: [{ type: "web_search", search_context_size: "medium" }],
+        tools: [{ type: "web_search", search_context_size: "medium" }],\n        reasoning: { effort: "low" },
         tool_choice: "auto",
         text: { format: { type: "json_object" } },
         max_output_tokens: 1400,
