@@ -1,5 +1,5 @@
 /* NOBIT AI CLIENT
- * Supabase Edge Function proxy. Only the public anon/publishable key belongs here.
+ * Supabase Edge Function proxy. Only the public Supabase anon key belongs here.
  */
 (() => {
   const KEY = "nobitAiConfigV1";
@@ -18,7 +18,7 @@
       if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
         throw new Error("رابط مشروع Supabase غير صحيح. استخدمي رابط المشروع الأساسي.");
       }
-      if (!key) throw new Error("أضيفي مفتاح anon أو publishable العام.");
+      if (!key) throw new Error("أضيفي مفتاح anon العام.");
       localStorage.setItem(KEY, JSON.stringify({ projectUrl: url, anonKey: key }));
       return true;
     },
