@@ -25,6 +25,8 @@
     categories,
     all() { return read().sort((a,b) => b.updatedAt - a.updatedAt); },
     teach({title, content, category="custom", source="", confidence="taught"}) {
+      const safety = globalThis.NobitSafety?.inspect(String(title || "") + " " + String(content || ""), { strict: true });
+      if (safety && !safety.allowed) throw new Error("تعذّر حفظ الدرس لأنه يتضمن محتوى غير آمن.");
       title = String(title || "").trim();
       content = String(content || "").trim();
       if (!title || !content) throw new Error("اكتب عنوان الدرس ومحتواه.");
@@ -51,6 +53,8 @@
     remove(id) { write(read().filter(item => item.id !== id)); },
     clear() { localStorage.removeItem(KEY); },
     search(query) {
+      const safety = globalThis.NobitSafety?.inspect(query);
+      if (safety && !safety.allowed) return [];
       const q = normalize(query);
       if (!q) return [];
       const terms = q.split(" ").filter(word => word.length > 1);
@@ -66,6 +70,10 @@
     },
     import(data) {
       const parsed = typeof data === "string" ? JSON.parse(data) : data;
+      if (Array.isArray(parsed?.lessons) && parsed.lessons.some(item => {
+        const check = globalThis.NobitSafety?.inspect(String(item?.title || "") + " " + String(item?.content || ""), { strict: true });
+        return check && !check.allowed;
+      })) throw new Error("ملف الدروس يحتوي على محتوى لا يمكن استيراده قبل مراجعته.");
       if (!parsed || parsed.format !== "nobit-lessons" || !Array.isArray(parsed.lessons)) throw new Error("ملف المعرفة غير صالح.");
       const current = read();
       const ids = new Set(current.map(item => item.id));
@@ -88,6 +96,8 @@
       return added;
     },
     answer(query) {
+      const safety = globalThis.NobitSafety?.inspect(query);
+      if (safety && !safety.allowed) return {text: safety.reply, title:"تنبيه سلامة", origin:"طبقة الحماية", category:"السلامة", source:""};
       const matches = api.search(query);
       if (!matches.length) return null;
       const item = matches[0];
