@@ -87,6 +87,15 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
    <div class="setting-row"><div><strong>مسح الذاكرة المحلية</strong><small>حذف المعلومات المحفوظة في هذا المتصفح.</small></div><button class="small-btn danger" onclick="clearMemory()">مسح</button></div>
    <p class="hint">مزامنة الذاكرة بين الأجهزة وسياسات الخصوصية السحابية تحتاج ربط قاعدة البيانات لاحقاً.</p>
   </div>
+  <div class="panel setting-card"><h3>اتصال دماغ نوبيت</h3>
+   <p class="hint">يربط المحادثة بنموذج الذكاء الاصطناعي عبر Supabase. المفتاح السري للنموذج يبقى داخل الخادم ولا يوضع هنا.</p>
+   <div class="form-stack">
+    <label><span class="form-label">رابط مشروع Supabase</span><input class="field-input" id="nobitProjectUrl" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off"></label>
+    <label><span class="form-label">مفتاح anon / publishable العام</span><input class="field-input" id="nobitAnonKey" type="password" placeholder="المفتاح العام للمشروع" autocomplete="off"></label>
+    <button class="small-btn" onclick="saveNobitAiConfig()">حفظ إعداد الاتصال</button>
+    <p class="hint" id="nobitAiStatus">لم يتم إعداد اتصال الدماغ بعد.</p>
+   </div>
+  </div>
   <div class="panel setting-card"><h3>حول نوبيت</h3><div class="setting-row"><div><strong>NOBIT | Orbit</strong><small>واجهة أولية · الإصدار 2.0</small></div><span class="eyebrow">BETA</span></div><p class="hint">بُنيت هذه الواجهة لتكون أساساً لتطوير الحسابات والذاكرة والذكاء والبحث العالمي.</p></div>
  </div>
 </section>
@@ -114,6 +123,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 </div></div>
 
 <script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="learning.js"></script>
+<script src="ai.js"></script>
 <script>
 const NOBIT_PERSONALITY={name:"Nobit",identity:"أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور.",personality:["مشاغب بخفة","ساخر بلطف","فضولي","يعترف عندما لا يعرف"],behavior:["أجيب بوضوح","أمزح عندما يناسب الموقف","أكون جاداً في المواضيع الجادة","لا أخترع المعلومات"]};
 const settingDefaults={dynamicBackground:true,showClock:true,orbitMotion:true,reduceMotion:false,notifications:false};
@@ -135,8 +145,8 @@ function authNotice(){document.getElementById("authNotice").textContent="هذه 
 function overlayClose(e,id){if(e.target.id===id)closeOverlay(id)}
 function closeOverlay(id){document.getElementById(id).classList.remove("open")}
 function openInstructions(){document.getElementById("instructionsOverlay").classList.add("open")}
-function sendMessage(){const input=document.getElementById("userInput"),chat=document.getElementById("chat"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";setTimeout(()=>{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer&&window.NobitLearning){const learned=NobitLearning.answer(value);if(learned)answer=learned.text+"\n\n"+learned.origin+(learned.source?" · المصدر: "+learned.source:"")}if(!answer)answer=generateReply(value);appendMessage(answer,"ai")},250)}
-function appendMessage(text,kind){const chat=document.getElementById("chat"),el=document.createElement("div");el.className="message "+kind;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight}
+async function sendMessage(){const input=document.getElementById("userInput"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";const history=[...document.querySelectorAll("#chat .message")].slice(-11,-1).map(el=>({role:el.classList.contains("user")?"user":"assistant",content:el.textContent}));const pending=appendMessage("أفكر...","ai");try{if(window.NobitAI&&NobitAI.isConfigured()){const result=await NobitAI.chat(value,history);pending.textContent=result.reply;for(const lesson of (result.lessons_to_save||[])){if(confirm("نوبيت فهم أن هذه معلومة تريدين تعليمه إياها:\n\n"+lesson.title+"\n"+lesson.content+"\n\nهل نحفظها في دفتر التعليم؟")){NobitLearning.teach({...lesson,confidence:"taught"});renderWorldKnowledge();}}}else{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer&&window.NobitLearning){const learned=NobitLearning.answer(value);if(learned)answer=learned.text+"\n\n"+learned.origin+(learned.source?" · المصدر: "+learned.source:"")}if(!answer)answer=generateReply(value);pending.textContent=answer;}}catch(error){pending.textContent="تعذر تشغيل دماغ نوبيت: "+error.message+"\nتحققي من إعداد Supabase ونشر الدالة.";}}
+function appendMessage(text,kind){const chat=document.getElementById("chat"),el=document.createElement("div");el.className="message "+kind;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;return el}
 function generateReply(text){const m=text.toLowerCase();if(/مرحبا|سلام|هلا|هاي/.test(m))return"مرحباً. أنا نوبيت، ما الذي تريد استكشافه؟";if(/من انت|من أنت|مين انت|مين أنت/.test(m))return"أنا نوبيت. مساعد ذكي قيد التطوير، وأتعلم خطوة بخطوة.";if(/كيف حالك|شن حالك|كيفك/.test(m))return"النظام مستقر حتى الآن. وهذا خبر جيد للوحة التشغيل.";if(/رسم|ترسم/.test(m))return"الرسم مجال جميل. هل تعمل على فكرة جديدة؟";if(/ذكاء اصطناعي| ai/.test(m))return"الذكاء الاصطناعي مجال واسع، وما زلت أحتاج إلى تطوير قدراتي ومصادري.";return"لم أتعلم الإجابة عن هذا بعد. لن أخترع معلومة من عندي."}
 function renderWorldKnowledge(){const box=document.getElementById("worldKnowledge");if(!box||!window.NobitLearning)return;const items=NobitLearning.all().filter(x=>["culture","geography","history","language"].includes(x.category));if(!items.length){box.innerHTML='<p class="hint">لم تُضف دروس محلية بعد. عندما تعلّمين نوبيت معلومة، ستظهر هنا أيضاً.</p>';return}box.innerHTML=items.slice(0,8).map(x=>'<article style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>'+escapeHtmlText(x.title)+'</strong><p style="white-space:pre-wrap;line-height:1.8;color:#a9bdd0">'+escapeHtmlText(x.content)+'</p><small style="color:var(--teal)">تعليم المطوّرة · '+(NobitLearning.categories[x.category]||"معرفة")+'</small></article>').join("")}
 function escapeHtmlText(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -144,7 +154,9 @@ function showMemory(){const data=window.NobitMemory&&NobitMemory.data?NobitMemor
 function clearMemory(){if(!confirm("هل تريد مسح كل الذاكرة المحلية على هذا الجهاز؟"))return;if(window.NobitMemory)NobitMemory.clear();alert("تم مسح الذاكرة المحلية.")}
 document.getElementById("userInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
 try{renderAvatar(localStorage.getItem("nobitProfileAvatar"))}catch{}
-applySettings();updateClock();renderWorldKnowledge();setInterval(updateClock,30000);
+applySettings();updateClock();renderWorldKnowledge();loadNobitAiConfig();setInterval(updateClock,30000);
+function loadNobitAiConfig(){const c=window.NobitAI&&NobitAI.config?NobitAI.config():{};const url=document.getElementById("nobitProjectUrl"),key=document.getElementById("nobitAnonKey"),status=document.getElementById("nobitAiStatus");if(url)url.value=c.projectUrl||"";if(key)key.value=c.anonKey||"";if(status)status.textContent=c.projectUrl?"إعدادات الاتصال محفوظة على هذا الجهاز. يلزم نشر Edge Function وإضافة OPENAI_API_KEY في أسرار Supabase.":"لم يتم إعداد اتصال الدماغ بعد."}
+function saveNobitAiConfig(){try{NobitAI.saveConfig(document.getElementById("nobitProjectUrl").value,document.getElementById("nobitAnonKey").value);document.getElementById("nobitAiStatus").textContent="تم حفظ الإعدادات محلياً. تبقى خطوة نشر الدالة وإعداد مفتاح النموذج على Supabase.";alert("تم حفظ إعداد اتصال نوبيت على هذا الجهاز.");}catch(error){alert(error.message)}}
 </script>
 </body>
 </html>
