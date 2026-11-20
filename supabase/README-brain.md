@@ -1,25 +1,35 @@
-# NOBIT Brain setup
+# NOBIT Independent Knowledge Engine
 
-The browser app does not contain the OpenAI secret. The AI request goes through the Supabase Edge Function at `supabase/functions/nobit-brain/index.ts`.
+NOBIT uses its own retrieval-based knowledge engine. It does not call OpenAI or another paid language-model API.
 
-## Required setup
+## Architecture
 
-1. Create or open the Supabase project used by NOBIT.
-2. Deploy the Edge Function named `nobit-brain` from this folder using the Supabase CLI:
-   `supabase functions deploy nobit-brain`
-3. In Supabase project secrets, add `OPENAI_API_KEY` with an API key from the OpenAI API platform.
-4. Optional: set `OPENAI_MODEL` to a model enabled for your API project. The default is `gpt-6.2-astra`, which the current OpenAI web-search guide documents for Responses API web search.
-5. Open NOBIT Settings and enter the Supabase project URL and the public anon JWT key.
+- Browser client: `ai.js` sends the question and locally taught lessons to the project's Supabase Edge Function.
+- Edge Function: `supabase/functions/nobit-brain/index.ts` searches public knowledge sources.
+- Wikipedia: Arabic search first, then English if Arabic has no results; retrieves article introductions.
+- Wikidata: retrieves structured entity labels and descriptions.
+- Local learning: `learning.js` stores developer-taught lessons in this browser. Matching lessons are preferred before external search.
 
-## Security notes
+## Deploy from the Supabase Dashboard
 
-- Never put `OPENAI_API_KEY` or a Supabase `service_role` key in HTML, JavaScript, GitHub Pages, or the browser settings.
-- The browser stores only the public Supabase key and project URL in local storage.
-- Keep Supabase Edge Function JWT verification enabled. The client sends the public anon key as the bearer token; use the legacy anon JWT key for this prototype; a publishable key alone is not a JWT bearer token.
-- This prototype does not yet implement per-user Supabase Auth, persistent cloud lesson sync, abuse quotas, or admin permissions. Do not treat the current endpoint as a private developer-only teaching console.
-- Live web search is enabled through the OpenAI Responses API web_search tool. The function returns source URLs when the API supplies citations.
-- The AI may propose lessons only when it interprets a message as explicit teaching/correction. The user must confirm before the lesson is saved locally.
+1. Open the project's Edge Functions section.
+2. Open the `nobit-brain` function.
+3. Open the Code editor.
+4. Replace `index.ts` with the current version from this repository:
+   `supabase/functions/nobit-brain/index.ts`
+5. Click **Deploy updates**.
+6. Keep JWT verification enabled. The browser client uses the legacy public anon JWT key.
 
-## Current learning behavior
+No `OPENAI_API_KEY`, provider secret, or paid model account is required.
 
-The model receives the latest conversation turns and up to 35 locally stored lessons as context. The personal local memory store is not sent. Lessons are not model training or fine-tuning; they are retrieved context supplied to the model for each request.
+## Configure the browser app
+
+In NOBIT Settings, enter the Supabase Project URL and the public legacy anon JWT key. The key is stored in this browser's local storage.
+
+Never put a Supabase `service_role` key or any secret key in the browser or GitHub.
+
+## Important limitations
+
+This is an independent retrieval engine, not a generative language model. It can retrieve and display sourced excerpts and developer-taught lessons, but it does not yet perform deep semantic understanding, multi-step reasoning, or natural-language synthesis. Search results depend on Wikipedia and Wikidata availability and coverage.
+
+The current prototype has no user authentication, per-user quotas, or private developer teaching permissions. Do not submit sensitive personal information.
