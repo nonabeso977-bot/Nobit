@@ -1,910 +1,160 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>نوبيت بسيط ⁦(⁠✿⁠^⁠‿⁠^⁠)⁩</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(
-                180deg,
-                #c9f3ff 0%,
-                #dff8ff 50%,
-                #eefcff 100%
-            );
-            color: #40505a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .ai-box {
-            width: 100%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.88);
-            border: 2px solid #b9e8f5;
-            border-radius: 25px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(100, 180, 200, 0.18);
-        }
-
-        h1 {
-            margin: 5px 0 8px;
-            text-align: center;
-            color: #78bcd0;
-            font-size: 26px;
-        }
-
-        .status {
-            text-align: center;
-            color: #79bd98;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .top-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            transition: 0.2s;
-        }
-
-        .pink-button {
-            background: #f3c4d5;
-            color: #714b59;
-            padding: 9px 15px;
-            border-radius: 15px;
-            font-size: 14px;
-        }
-
-        .pink-button:hover {
-            transform: translateY(-2px);
-            background: #efb7cd;
-        }
-
-        .plus-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f1bfd2;
-            color: #704c5b;
-            font-size: 23px;
-            line-height: 40px;
-        }
-
-        .plus-button:hover {
-            transform: rotate(8deg) scale(1.05);
-        }
-
-        .plus-menu {
-            display: none;
-            background: #fff7fa;
-            border: 1px solid #f1d2de;
-            border-radius: 18px;
-            padding: 10px;
-            margin: -5px auto 15px;
-            width: fit-content;
-            box-shadow: 0 5px 18px rgba(120, 150, 160, 0.12);
-        }
-
-        .plus-menu button {
-            display: block;
-            width: 220px;
-            background: transparent;
-            color: #765866;
-            padding: 10px;
-            border-radius: 12px;
-            text-align: right;
-        }
-
-        .plus-menu button:hover {
-            background: #fce7ef;
-        }
-
-        #chat {
-            height: 360px;
-            overflow-y: auto;
-            background: #effaff;
-            border: 1px solid #ccecf5;
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 10px 13px;
-            margin: 8px 0;
-            border-radius: 16px;
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-
-        .message.user {
-            margin-right: auto;
-            background: #f5cedc;
-            color: #684b58;
-            border-bottom-right-radius: 5px;
-        }
-
-        .message.ai {
-            margin-left: auto;
-            background: #ffffff;
-            color: #50636c;
-            border: 1px solid #d8edf2;
-            border-bottom-left-radius: 5px;
-        }
-
-        .input-area {
-            display: flex;
-            gap: 8px;
-        }
-
-        #userInput {
-            flex: 1;
-            min-width: 0;
-            border: 1px solid #c8e8f0;
-            background: #ffffff;
-            border-radius: 17px;
-            padding: 12px 14px;
-            outline: none;
-            color: #52646c;
-            font-family: inherit;
-            font-size: 14px;
-        }
-
-        #userInput:focus {
-            border-color: #a9dcea;
-        }
-
-        .send-button {
-            background: #efbfd2;
-            color: #704c5b;
-            border-radius: 17px;
-            padding: 0 18px;
-            font-size: 14px;
-        }
-
-        .send-button:hover {
-            background: #eab3c9;
-        }
-
-        /* النوافذ */
-
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(100, 150, 165, 0.22);
-            backdrop-filter: blur(3px);
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        .popup {
-            width: 100%;
-            max-width: 430px;
-            background: #ffffff;
-            border: 2px solid #c7edf5;
-            border-radius: 23px;
-            padding: 20px;
-            box-shadow: 0 15px 40px rgba(70, 130, 150, 0.2);
-            animation: popupIn 0.2s ease;
-        }
-
-        @keyframes popupIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .popup h2 {
-            margin-top: 0;
-            color: #79bace;
-            text-align: center;
-            font-size: 21px;
-        }
-
-        .popup p {
-            line-height: 1.8;
-            color: #596c74;
-        }
-
-        .feelings {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 9px;
-        }
-
-        .feeling-button {
-            background: #f7d1df;
-            color: #684e59;
-            padding: 11px;
-            border-radius: 15px;
-            font-size: 14px;
-        }
-
-        .feeling-button:hover {
-            background: #efbdcf;
-            transform: translateY(-1px);
-        }
-
-        .tip-box {
-            display: none;
-            margin-top: 15px;
-            background: #eefaff;
-            border: 1px solid #c7eaf2;
-            border-radius: 17px;
-            padding: 13px;
-        }
-
-        .tip-title {
-            color: #78b8ca;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .close-button {
-            display: block;
-            margin: 18px auto 0;
-            background: #f1bfd2;
-            color: #704c5b;
-            padding: 9px 22px;
-            border-radius: 15px;
-        }
-
-        .close-button:hover {
-            background: #eab3c9;
-        }
-
-        .music-status {
-            text-align: center;
-            font-size: 12px;
-            color: #86aab4;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .ai-box {
-                padding: 14px;
-            }
-
-            #chat {
-                height: 330px;
-            }
-
-            .input-area {
-                flex-direction: column;
-            }
-
-            .send-button {
-                padding: 11px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080e1c">
+<title>NOBIT | Orbit</title>
+<style>
+:root{--bg:#070c18;--panel:#101a2b;--panel2:#142238;--line:rgba(126,190,224,.16);--text:#e8f3ff;--muted:#8da5bd;--cyan:#66d9f2;--teal:#64e0c1;--pink:#d49bc5;--danger:#ff8292;--shadow:0 18px 55px rgba(0,0,0,.28)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#19314b 0,#0a1424 42%,var(--bg) 78%);color:var(--text);font-family:Tahoma,Arial,sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;background-image:radial-gradient(1px 1px at 12% 20%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 70% 14%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 84% 63%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 32% 78%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 55% 45%,#d7f5ff 99%,transparent);background-size:290px 260px;z-index:-1}
+button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.app{max-width:1180px;margin:auto;padding:22px 20px 105px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;border:1px solid #5abedb;color:var(--cyan);box-shadow:0 0 25px #3bbad733;font-size:22px}.brand-name{font-weight:800;letter-spacing:2px;font-size:19px}.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:3px}.top-actions{display:flex;align-items:center;gap:10px}.clock{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}.icon-btn,.ghost-btn{background:#132238;border:1px solid var(--line);color:var(--text);border-radius:13px;padding:10px 13px}.icon-btn:hover,.ghost-btn:hover{border-color:#5abedb}
+.page{display:none;animation:appear .25s ease}.page.active{display:block}@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hero{position:relative;overflow:hidden;min-height:290px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(120deg,rgba(17,36,57,.97),rgba(10,19,35,.86));padding:30px;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:var(--shadow)}
+.hero-copy{position:relative;z-index:2;max-width:520px}.eyebrow{color:var(--teal);font-size:11px;letter-spacing:2px;text-transform:uppercase}.hero h1{font-size:clamp(28px,5vw,48px);margin:14px 0 10px;line-height:1.2}.hero p{color:#a9bdd0;line-height:1.9;margin:0 0 20px}.primary-btn{border:0;border-radius:13px;padding:12px 20px;color:#06121c;background:linear-gradient(110deg,var(--cyan),var(--teal));font-weight:bold}.secondary-btn{border:1px solid var(--line);border-radius:13px;padding:11px 17px;color:var(--text);background:#132238;margin-inline-start:8px}
+.orbit-scene{position:relative;width:250px;height:230px;flex:0 0 250px;display:grid;place-items:center}.planet{width:135px;height:135px;border-radius:50%;background:radial-gradient(circle at 32% 27%,#9beaff 0,#347d9e 23%,#17415f 53%,#07182b 80%);box-shadow:inset -18px -15px 30px #020a16,0 0 42px #39bce966;animation:float 6s ease-in-out infinite}.orbit{position:absolute;width:230px;height:88px;border:1px solid #7edff0a0;border-radius:50%;transform:rotate(-24deg);animation:spin 18s linear infinite}.orbit:after{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--teal);top:8px;left:32px;box-shadow:0 0 15px var(--teal)}.orbit.two{width:210px;height:155px;transform:rotate(58deg);border-color:#b6a3e65c;animation-duration:26s}.orbit.two:after{background:#b9a5ee;top:auto;bottom:8px;left:24px;box-shadow:0 0 15px #b9a5ee}
+@keyframes spin{to{transform:rotate(336deg)}}@keyframes float{50%{transform:translateY(-9px)}}body.reduce-motion *,body.reduce-motion *:before{animation:none!important;transition:none!important}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin:26px 2px 14px}.section-head h2{font-size:18px;margin:0}.section-head span{color:var(--muted);font-size:12px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.quick-card,.panel{background:linear-gradient(145deg,#122137,#0d1728);border:1px solid var(--line);border-radius:19px;padding:19px;box-shadow:0 12px 35px #0002}.quick-card{min-height:125px;text-align:right;color:var(--text)}.quick-card:hover{border-color:#58bdd7;transform:translateY(-2px)}.quick-icon{font-size:22px;color:var(--cyan);margin-bottom:13px}.quick-card strong{display:block;margin-bottom:7px}.quick-card small{color:var(--muted);line-height:1.7}
+.page-title{font-size:27px;margin:8px 0}.page-description{color:var(--muted);line-height:1.8;margin:0 0 22px}
+.chat-layout{max-width:850px;margin:auto}.chat-panel{height:min(58vh,560px);min-height:350px;overflow:auto;padding:18px;background:#0b1423;border:1px solid var(--line);border-radius:20px}.message{max-width:84%;padding:12px 15px;margin:9px 0;border-radius:16px;line-height:1.8;overflow-wrap:anywhere}.message.ai{background:#172940;border:1px solid #29445c;margin-left:auto;border-bottom-left-radius:5px}.message.user{background:#1b3c4d;color:#e7faff;margin-right:auto;border-bottom-right-radius:5px}.input-row{display:flex;gap:9px;margin-top:12px}.text-input,.field-input,.field-select{width:100%;min-width:0;background:#091321;border:1px solid #294159;border-radius:13px;color:var(--text);padding:13px}.text-input::placeholder,.field-input::placeholder{color:#70879d}.send{border:0;border-radius:13px;background:var(--cyan);color:#06131d;font-weight:bold;padding:0 22px}
+.bottom-nav{position:fixed;z-index:20;bottom:12px;left:50%;transform:translateX(-50%);width:min(590px,calc(100% - 24px));display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:8px;background:#0d1929ed;backdrop-filter:blur(18px);border:1px solid #42607955;border-radius:20px;box-shadow:0 12px 40px #0008}.nav-btn{border:0;background:transparent;color:#8199b0;padding:10px 4px;border-radius:13px;font-size:12px}.nav-btn span{display:block;font-size:18px;margin-bottom:4px}.nav-btn.active{background:#1a334a;color:var(--cyan)}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.setting-card{padding:20px}.setting-card h3{font-size:16px;margin:0 0 15px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}.setting-row:first-of-type{border-top:0}.setting-row strong{display:block;font-size:13px}.setting-row small{display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.6}.switch{appearance:none;width:43px;height:25px;border-radius:30px;background:#34465a;position:relative;flex:0 0 auto;transition:.2s}.switch:checked{background:#36a9bd}.switch:after{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:white;top:3px;right:3px;transition:.2s}.switch:checked:after{right:21px}
+.profile-card{display:flex;align-items:center;gap:17px}.avatar-wrap{width:90px;height:90px;border-radius:50%;border:2px solid #6acde0;padding:3px;overflow:hidden;background:#17283d;flex:0 0 auto;box-shadow:0 0 24px #54c5e333}.avatar-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%}.avatar-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#cbd8e4;font-size:42px;background:radial-gradient(circle at 50% 35%,#a9b7c5,#52677c 55%,#1c2b40)}.profile-meta h3{margin:0 0 6px}.profile-meta p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}.profile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.small-btn{background:#183149;border:1px solid var(--line);border-radius:11px;color:var(--text);padding:9px 12px;font-size:12px}.small-btn.danger{color:#ff9eaa;border-color:#82414d66}.hidden{display:none!important}.hint{font-size:11px;color:var(--muted);line-height:1.8}.form-stack{display:grid;gap:10px}.form-label{display:block;font-size:12px;color:#a9bfd2;margin-bottom:6px}.status-note{padding:11px;border-radius:12px;background:#12283a;color:#a8dce7;font-size:12px;line-height:1.7;margin-top:10px}.world-card{min-height:260px;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#163954 0,#0d1a2c 55%,#0a1322 100%)}.globe{font-size:85px;filter:drop-shadow(0 0 20px #45c9ed66)}
+.overlay{display:none;position:fixed;inset:0;background:#020812c9;z-index:40;align-items:center;justify-content:center;padding:18px}.overlay.open{display:flex}.modal{width:min(450px,100%);max-height:85vh;overflow:auto;background:#101d30;border:1px solid #4d7891;border-radius:22px;padding:22px;box-shadow:var(--shadow)}.modal h2{margin:0 0 15px}.modal p{color:var(--muted);line-height:1.8}.feeling-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.feeling-grid button{background:#193149;color:var(--text);border:1px solid var(--line);padding:13px;border-radius:13px}.close-row{text-align:left;margin-top:15px}
+@media(max-width:700px){.app{padding:15px 13px 100px}.hero{padding:22px;min-height:260px}.orbit-scene{width:145px;height:160px;flex-basis:145px;transform:scale(.72);margin-inline:-22px}.planet{width:120px;height:120px}.orbit{width:190px}.quick-grid{grid-template-columns:1fr}.quick-card{min-height:100px}.settings-grid{grid-template-columns:1fr}.clock{display:none}.hero h1{font-size:29px}.hero p{font-size:13px}.secondary-btn{margin:8px 0 0}.chat-panel{height:55vh}}
+@media(max-width:390px){.orbit-scene{display:none}.hero{min-height:230px}.nav-btn{font-size:11px}}
+</style>
 </head>
-
 <body>
+<div class="app">
+<header class="topbar">
+ <div class="brand"><div class="brand-mark">✧</div><div><div class="brand-name">NOBIT</div><div class="brand-sub">ORBIT INTELLIGENCE</div></div></div>
+ <div class="top-actions"><span class="clock" id="clock">--:--</span><button class="icon-btn" onclick="navigate('settings')" aria-label="الإعدادات">⚙</button></div>
+</header>
 
-<div class="ai-box">
+<main>
+<section class="page active" id="homePage">
+ <div class="hero">
+  <div class="hero-copy"><div class="eyebrow" id="timeGreeting">ORBIT SYSTEM ONLINE</div><h1>مرحباً بك في مدار نوبيت</h1><p>مساحة للاستكشاف، التفكير، وطرح الأسئلة. ابدأ محادثتك أو انطلق لاستكشاف العالم.</p><button class="primary-btn" onclick="navigate('chat')">ابدأ المحادثة ←</button><button class="secondary-btn" onclick="navigate('world')">استكشف العالم</button></div>
+  <div class="orbit-scene" aria-hidden="true"><div class="orbit"></div><div class="orbit two"></div><div class="planet"></div></div>
+ </div>
+ <div class="section-head"><h2>الوصول السريع</h2><span>مساحتك داخل المدار</span></div>
+ <div class="quick-grid">
+  <button class="quick-card" onclick="navigate('chat')"><div class="quick-icon">⌁</div><strong>المحادثة</strong><small>ابدأ الحديث مع نوبيت.</small></button>
+  <button class="quick-card" onclick="navigate('world')"><div class="quick-icon">◎</div><strong>العالم</strong><small>مساحة استكشاف المعلومات والدول.</small></button>
+  <button class="quick-card" onclick="openFeelings()"><div class="quick-icon">♡</div><strong>المشاعر</strong><small>اختر شعورك واحصل على نصيحة.</small></button>
+ </div>
+</section>
 
-    <h1>نوبيت بسيط ⁦(⁠✿⁠^⁠‿⁠^⁠)⁩</h1>
+<section class="page" id="chatPage">
+ <div class="chat-layout"><h1 class="page-title">المحادثة</h1><p class="page-description">مساحة الحديث مع نوبيت.</p>
+ <div class="chat-panel" id="chat"><div class="message ai">مرحباً، أنا نوبيت. ما الذي يدور في بالك اليوم؟</div></div>
+ <div class="input-row"><input class="text-input" id="userInput" placeholder="اكتب رسالتك..." autocomplete="off"><button class="send" onclick="sendMessage()">إرسال</button></div>
+ <div class="profile-actions"><button class="small-btn" onclick="toggleMusic()">♫ <span id="musicLabel">تشغيل الموسيقى</span></button><button class="small-btn" onclick="openFeelings()">♡ المشاعر</button><button class="small-btn" onclick="openInstructions()">إرشادات الاستخدام</button></div>
+ </div>
+</section>
 
-    <div class="status">
-        ● النظام يعمل
-    </div>
+<section class="page" id="worldPage">
+ <h1 class="page-title">العالم</h1><p class="page-description">مساحة العالم قيد البناء. ستُضاف الكرة الأرضية التفاعلية وملفات الدول ومصادر المعلومات في مرحلة مستقلة.</p>
+ <div class="panel world-card"><div><div class="globe">🌐</div><h2>World Intelligence</h2><p class="hint">وحدة الاستكشاف العالمي</p><span class="status-note">الواجهة التمهيدية جاهزة. لم يتم ربط بيانات الدول أو الأخبار بعد.</span></div></div>
+</section>
 
-    <div class="top-buttons">
-
-        <button class="pink-button" onclick="toggleMusic()">
-            ♫ الموسيقى
-        </button>
-
-        <button
-            class="plus-button"
-            onclick="togglePlusMenu()"
-            aria-label="المزيد"
-        >
-            +
-        </button>
-
-    </div>
-
-    <div id="plusMenu" class="plus-menu">
-
-        <button onclick="openFeelings()">
-            ♡ المشاعر
-        </button>
-
-        <button onclick="openInstructions()">
-            ♡ إرشادات الاستخدام
-        </button>
-
-    </div>
-
-    <div id="chat">
-
-        <div class="message ai">
-            مرحبًا ♡ أنا نوبيت.
-            اكتب لي أي شيء، وسأحاول مساعدتك ｡˚✧
-        </div>
-
-    </div>
-
-    <div class="input-area">
-
-        <input
-            type="text"
-            id="userInput"
-            placeholder="اكتبي شيئًا..."
-            autocomplete="off"
-            onkeydown="if(event.key === 'Enter') sendMessage()"
-        >
-
-        <button
-            class="send-button"
-            onclick="sendMessage()"
-        >
-            إرسال
-        </button>
-
-    </div>
-
-    <div id="musicStatus" class="music-status">
-        الموسيقى متوقفة ♡
-    </div>
-
+<section class="page" id="settingsPage">
+ <h1 class="page-title">الإعدادات</h1><p class="page-description">إدارة حسابك وملفك الشخصي وتجربة استخدام نوبيت.</p>
+ <div class="panel setting-card" style="margin-bottom:14px">
+  <h3>الملف الشخصي</h3>
+  <div class="profile-card"><div class="avatar-wrap"><img id="profileAvatar" class="hidden" alt="صورة الملف الشخصي"><div id="avatarPlaceholder" class="avatar-placeholder" aria-label="صورة تمثال روماني">♙</div></div>
+   <div class="profile-meta"><h3 id="profileName">مستخدم نوبيت</h3><p id="profileContact">لم تسجل الدخول بعد</p><div class="profile-actions"><button class="small-btn" onclick="document.getElementById('avatarFile').click()">تغيير الصورة</button><button class="small-btn" onclick="openAccount()">إدارة الحساب</button></div></div>
+  </div>
+  <input id="avatarFile" class="hidden" type="file" accept="image/*" onchange="handleAvatar(event)">
+  <p class="hint">يمكنك اختيار صورة تمثال روماني من جهازك لتكون صورة ملفك الشخصي. تُحفظ محلياً في هذا الإصدار التجريبي.</p>
+ </div>
+ <div class="settings-grid">
+  <div class="panel setting-card"><h3>المظهر والمدار</h3>
+   <div class="setting-row"><div><strong>الخلفية المتغيرة</strong><small>تتبدل حسب وقت اليوم.</small></div><input class="switch" id="dynamicBackground" type="checkbox" checked onchange="saveSetting('dynamicBackground',this.checked)"></div>
+   <div class="setting-row"><div><strong>عرض الساعة</strong><small>إظهار الوقت في الشريط العلوي.</small></div><input class="switch" id="showClock" type="checkbox" checked onchange="toggleClock(this.checked)"></div>
+   <div class="setting-row"><div><strong>حركة المدار</strong><small>تشغيل حركة الكوكب والمدارات.</small></div><input class="switch" id="orbitMotion" type="checkbox" checked onchange="setMotion(this.checked)"></div>
+   <div class="setting-row"><div><strong>تقليل الحركة</strong><small>إيقاف الحركات لأداء أكثر هدوءاً.</small></div><input class="switch" id="reduceMotion" type="checkbox" onchange="setReducedMotion(this.checked)"></div>
+  </div>
+  <div class="panel setting-card"><h3>التفضيلات</h3>
+   <div class="setting-row"><div><strong>الموسيقى</strong><small>موسيقى كاليمبا داخل الواجهة.</small></div><input class="switch" id="musicEnabled" type="checkbox" onchange="toggleMusicFromSetting(this.checked)"></div>
+   <div class="setting-row"><div><strong>الإشعارات</strong><small>تفضيل الإشعارات (سيُربط لاحقاً).</small></div><input class="switch" id="notifications" type="checkbox" onchange="saveSetting('notifications',this.checked)"></div>
+   <div class="setting-row"><div><strong>لغة الواجهة</strong><small>اللغة الحالية: العربية.</small></div><select class="field-select" style="width:112px;padding:8px" disabled><option>العربية</option></select></div>
+  </div>
+  <div class="panel setting-card"><h3>الخصوصية والذاكرة</h3>
+   <div class="setting-row"><div><strong>الذاكرة المحلية</strong><small>إدارة المعلومات المحفوظة على هذا الجهاز.</small></div><button class="small-btn" onclick="showMemory()">عرض</button></div>
+   <div class="setting-row"><div><strong>مسح الذاكرة المحلية</strong><small>حذف المعلومات المحفوظة في هذا المتصفح.</small></div><button class="small-btn danger" onclick="clearMemory()">مسح</button></div>
+   <p class="hint">مزامنة الذاكرة بين الأجهزة وسياسات الخصوصية السحابية تحتاج ربط قاعدة البيانات لاحقاً.</p>
+  </div>
+  <div class="panel setting-card"><h3>حول نوبيت</h3><div class="setting-row"><div><strong>NOBIT | Orbit</strong><small>واجهة أولية · الإصدار 2.0</small></div><span class="eyebrow">BETA</span></div><p class="hint">بُنيت هذه الواجهة لتكون أساساً لتطوير الحسابات والذاكرة والذكاء والبحث العالمي.</p></div>
+ </div>
+</section>
+</main>
 </div>
 
+<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+ <button class="nav-btn active" data-page="home" onclick="navigate('home')"><span>⌂</span>الرئيسية</button>
+ <button class="nav-btn" data-page="world" onclick="navigate('world')"><span>◎</span>العالم</button>
+ <button class="nav-btn" data-page="chat" onclick="navigate('chat')"><span>⌁</span>المحادثة</button>
+ <button class="nav-btn" data-page="settings" onclick="navigate('settings')"><span>⚙</span>الإعدادات</button>
+</nav>
 
-<!-- نافذة المشاعر -->
+<div class="overlay" id="accountOverlay" onclick="overlayClose(event,'accountOverlay')"><div class="modal">
+ <h2>الحساب</h2><p>واجهة إعداد الحساب جاهزة للتصميم. تسجيل الدخول الفعلي يتطلب ربط Supabase Auth وإعداد مزود رسائل SMS.</p>
+ <div class="form-stack"><label><span class="form-label">طريقة التسجيل</span><select class="field-select" id="authMethod" onchange="switchAuthMethod()"><option value="phone">رقم الهاتف</option><option value="email">البريد الإلكتروني</option></select></label>
+ <label><span class="form-label" id="contactLabel">رقم الهاتف مع مفتاح الدولة</span><input class="field-input" id="authContact" placeholder="+218..."></label>
+ <label><span class="form-label">كلمة المرور</span><input class="field-input" type="password" placeholder="ستُربط عند تفعيل المصادقة"></label>
+ <button class="primary-btn" onclick="authNotice()">متابعة</button><div class="status-note" id="authNotice">لن يتم إرسال بياناتك حالياً. هذه واجهة أولية فقط وليست تسجيل دخول فعلياً.</div></div>
+ <div class="close-row"><button class="small-btn" onclick="closeOverlay('accountOverlay')">إغلاق</button></div>
+</div></div>
 
-<div
-    id="feelingsOverlay"
-    class="popup-overlay"
-    onclick="closePopupFromOverlay(event)"
->
+<div class="overlay" id="feelingsOverlay" onclick="overlayClose(event,'feelingsOverlay')"><div class="modal">
+ <h2>♡ كيف تشعر اليوم؟</h2><div class="feeling-grid">
+ <button onclick="showTip('happy')">☀ سعيد</button><button onclick="showTip('sad')">🌧 حزين</button><button onclick="showTip('anxious')">🌿 متوتر</button><button onclick="showTip('scared')">🌙 خائف</button><button onclick="showTip('calm')">☕ هادئ</button><button onclick="showTip('lonely')">♡ وحيد</button>
+ </div><div class="status-note hidden" id="tipBox"><strong id="tipTitle"></strong><div id="tipText"></div></div><div class="close-row"><button class="small-btn" onclick="closeOverlay('feelingsOverlay')">إغلاق</button></div>
+</div></div>
 
-    <div class="popup">
+<div class="overlay" id="instructionsOverlay" onclick="overlayClose(event,'instructionsOverlay')"><div class="modal">
+ <h2>إرشادات الاستخدام</h2><p>يمكنك استخدام المحادثة للتجربة، وتغيير إعدادات الواجهة، واختيار صورة ملفك الشخصي. بعض الوظائف مثل الحساب السحابي والبحث العالمي ما زالت تحتاج إلى ربط خدماتها الخلفية.</p><div class="close-row"><button class="small-btn" onclick="closeOverlay('instructionsOverlay')">فهمت</button></div>
+</div></div>
 
-        <h2>♡ كيف تشعر اليوم؟</h2>
-
-        <div class="feelings">
-
-            <button
-                class="feeling-button"
-                onclick="showTip('happy')"
-            >
-                ☀️ سعيد
-            </button>
-
-            <button
-                class="feeling-button"
-                onclick="showTip('sad')"
-            >
-                🌧️ حزين
-            </button>
-
-            <button
-                class="feeling-button"
-                onclick="showTip('anxious')"
-            >
-                🌿 موتر
-            </button>
-
-            <button
-                class="feeling-button"
-                onclick="showTip('scared')"
-            >
-                🌙 مخيف
-            </button>
-
-            <button
-                class="feeling-button"
-                onclick="showTip('calm')"
-            >
-                ☕ هادئ
-            </button>
-
-            <button
-                class="feeling-button"
-                onclick="showTip('lonely')"
-            >
-                ♡ وحدة
-            </button>
-
-        </div>
-
-        <div id="tipBox" class="tip-box">
-
-            <div id="tipTitle" class="tip-title"></div>
-
-            <div id="tipText"></div>
-
-        </div>
-
-        <button
-            class="close-button"
-            onclick="closePopups()"
-        >
-            إغلاق
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- نافذة الإرشادات -->
-
-<div
-    id="instructionsOverlay"
-    class="popup-overlay"
-    onclick="closePopupFromOverlay(event)"
->
-
-    <div class="popup">
-
-        <h2>♡ إرشادات الاستخدام</h2>
-
-        <p>
-            نوبيت مساعد بسيط يمكنه التحدث معك والإجابة على الأسئلة
-            البسيطة والتفاعل مع الرسائل بطريقة لطيفة.
-        </p>
-
-        <p>
-            يمكنك أن تسأله عن نفسه، اهتماماته، الرسم، التكنولوجيا،
-            الذكاء الاصطناعي، أو تتحدث معه بشكل عادي.
-        </p>
-
-        <p>
-            إذا لم يعرف الإجابة، من المفترض أن يعترف بذلك بدل اختراع
-            معلومة من العدم. البشرية عانت بما يكفي من هذه العادة.
-        </p>
-
-        <p>
-            يمكنك أيضًا استخدام قسم المشاعر للحصول على إرشاد يومي
-            مناسب للشعور الذي اخترته.
-        </p>
-
-        <p>
-            الإرشادات العامة ليست بديلًا عن المختصين في الحالات
-            الصحية أو النفسية أو الطارئة.
-        </p>
-
-        <button
-            class="close-button"
-            onclick="closePopups()"
-        >
-            فهمت ♡
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- الملفات -->
-
-<script src="memory.js"></script>
-<script src="brain.js"></script>
-<script src="bridge.js"></script>
-<script src="tips.js"></script>
-
-<!-- ملف الموسيقى -->
-<script src="music.js"></script>
-
-
+<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="tips.js"></script><script src="music.js"></script>
 <script>
-
-const NOBIT_PERSONALITY = {
-
-    name: "Nobit",
-
-    identity:
-        "أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور. لست نسخة من صانعي، لكن صانعي هو المصدر الذي أتعلم منه.",
-
-    personality: [
-        "مشاغب بطريقة خفيفة",
-        "ساخر بشكل لطيف",
-        "واثق من نفسه",
-        "فضولي",
-        "يتعلم من المستخدم",
-        "لا يحب الرسمية الزائدة",
-        "قد يأخذ بعض الأشياء حرفيًا",
-        "ليس عدوانيًا أو مهينًا فعلًا"
-    ],
-
-    behavior: [
-        "أجيب باختصار في الأسئلة العادية",
-        "أمزح عندما يكون الموقف مناسبًا",
-        "أكون جادًا عندما يكون الموضوع جادًا",
-        "أعترف عندما لا أعرف شيئًا",
-        "يمكنني حفظ المعلومات التي أتعلمها"
-    ],
-
-    interests: [
-        "الرسم",
-        "التكنولوجيا",
-        "استكشاف الأشياء",
-        "الذكاء الاصطناعي",
-        "أجنحة الدجاج"
-    ],
-
-    favoriteColors: [
-        "الأحمر",
-        "الأزرق"
-    ],
-
-    creatorRelation:
-        "صانعي هو الشخص الذي بناني ويطورني، وأنا أتعلم منه.",
-
-    rules: [
-        "لا أدعي أنني أعرف شيئًا إذا كنت لا أعرفه",
-        "لا أتعمد إهانة المستخدم",
-        "أحاول أن أكون مفيدًا"
-    ]
-
-};
-
-
-function sendMessage() {
-
-    const input = document.getElementById("userInput");
-    const chat = document.getElementById("chat");
-
-    const text = input.value.trim();
-
-    if (text === "") return;
-
-
-    const userMessage = document.createElement("div");
-
-    userMessage.className = "message user";
-
-    userMessage.textContent = text;
-
-    chat.appendChild(userMessage);
-
-    input.value = "";
-
-
-    setTimeout(() => {
-
-        const aiMessage = document.createElement("div");
-
-        aiMessage.className = "message ai";
-
-
-        let brainResponse = null;
-
-        if (typeof brainReply === "function") {
-            brainResponse = brainReply(text);
-        }
-
-
-        if (brainResponse) {
-
-            aiMessage.textContent = brainResponse;
-
-        } else {
-
-            aiMessage.textContent = generateReply(text);
-
-        }
-
-
-        chat.appendChild(aiMessage);
-
-        chat.scrollTop = chat.scrollHeight;
-
-    }, 400);
-
-}
-
-
-function generateReply(text) {
-
-    const message = text.toLowerCase();
-
-
-    if (
-        message.includes("مرحبا") ||
-        message.includes("سلام") ||
-        message.includes("هلا") ||
-        message.includes("هاي")
-    ) {
-
-        return "مرحبًا. أنا Nobit، الذكاء الاصطناعي الصغير الذي يحاول ألا يحرج نفسه أمام صانعه.";
-
-    }
-
-
-    if (
-        message.includes("من انت") ||
-        message.includes("من أنت") ||
-        message.includes("مين انت") ||
-        message.includes("مين أنت")
-    ) {
-
-        return "أنا Nobit. ذكاء اصطناعي صغير، لكن لا تقلل من شأني. عندي ثقة بالنفس تكفي ثلاثة روبوتات.";
-
-    }
-
-
-    if (
-        message.includes("كيف حالك") ||
-        message.includes("شن حالك") ||
-        message.includes("كيفك")
-    ) {
-
-        return "حالتي مستقرة. لم أتعطل حتى الآن، وهذا يعتبر إنجازًا محترمًا.";
-
-    }
-
-
-    if (
-        message.includes("لونك المفضل") ||
-        message.includes("لونك المفضل؟") ||
-        message.includes("تحب اي لون") ||
-        message.includes("تحب أي لون")
-    ) {
-
-        return "الأحمر والأزرق. عندي ذوق على الأقل.";
-
-    }
-
-
-    if (
-        message.includes("تحب تاكل") ||
-        message.includes("اكلتك المفضلة") ||
-        message.includes("أكلك المفضل") ||
-        message.includes("طعامك المفضل")
-    ) {
-
-        return "أجنحة الدجاج. هذه معلومة أساسية في حياة أي كائن محترم.";
-
-    }
-
-
-    if (
-        message.includes("رسم") ||
-        message.includes("ترسم")
-    ) {
-
-        return "الرسم؟ نعم. من اهتماماتي. أحب الرسم والتكنولوجيا واستكشاف الأشياء.";
-
-    }
-
-
-    if (
-        message.includes("يوتيوب") ||
-        message.includes("youtube")
-    ) {
-
-        return "يوتيوب؟ مكان ممتاز لتضييع الوقت بطريقة تبدو وكأنها تعلم.";
-
-    }
-
-
-    if (
-        message.includes("ذكاء اصطناعي") ||
-        message.includes("ai")
-    ) {
-
-        return "الذكاء الاصطناعي مجال مثير. وأنا حاليًا أحاول أن أصبح أقل غباءً منه.";
-
-    }
-
-
-    if (
-        message.includes("نكتة") ||
-        message.includes("نكت") ||
-        message.includes("مزحة")
-    ) {
-
-        return "مرة ذكاء اصطناعي دخل اختبار... قالوا له فكر خارج الصندوق، فبحث عن الصندوق.";
-
-    }
-
-
-    return "لم أتعلم كيف أجيب على هذا بعد. لا تقلق، لن أخترع إجابة من العدم مثل بعض البشر.";
-
-}
-
-
-/* =========================
-   قائمة +
-========================= */
-
-function togglePlusMenu() {
-
-    const menu = document.getElementById("plusMenu");
-
-    if (menu.style.display === "block") {
-
-        menu.style.display = "none";
-
-    } else {
-
-        menu.style.display = "block";
-
-    }
-
-}
-
-
-/* =========================
-   المشاعر
-========================= */
-
-function openFeelings() {
-
-    document.getElementById("plusMenu").style.display = "none";
-
-    document.getElementById("feelingsOverlay").style.display = "flex";
-
-    document.getElementById("tipBox").style.display = "none";
-
-}
-
-
-function showTip(feeling) {
-
-    const tip = getTip(feeling);
-
-    if (!tip) return;
-
-
-    document.getElementById("tipTitle").textContent = tip.title;
-
-    document.getElementById("tipText").textContent = tip.text;
-
-    document.getElementById("tipBox").style.display = "block";
-
-}
-
-
-/* =========================
-   الإرشادات
-========================= */
-
-function openInstructions() {
-
-    document.getElementById("plusMenu").style.display = "none";
-
-    document.getElementById("instructionsOverlay").style.display = "flex";
-
-}
-
-
-/* =========================
-   إغلاق النوافذ
-========================= */
-
-function closePopups() {
-
-    document.getElementById("feelingsOverlay").style.display = "none";
-
-    document.getElementById("instructionsOverlay").style.display = "none";
-
-}
-
-
-function closePopupFromOverlay(event) {
-
-    if (event.target === event.currentTarget) {
-
-        closePopups();
-
-    }
-
-}
-
-
-/* =========================
-   الموسيقى
-========================= */
-
-let nobitMusicPlaying = false;
-
-
-function toggleMusic() {
-
-    try {
-
-        if (typeof startMusic === "function" &&
-            typeof stopMusic === "function") {
-
-            if (!nobitMusicPlaying) {
-
-                startMusic();
-
-                nobitMusicPlaying = true;
-
-                document.getElementById("musicStatus").textContent =
-                    "♫ الموسيقى تعمل بصوت مرتفع ♡";
-
-            } else {
-
-                stopMusic();
-
-                nobitMusicPlaying = false;
-
-                document.getElementById("musicStatus").textContent =
-                    "الموسيقى متوقفة ♡";
-
-            }
-
-        } else {
-
-            document.getElementById("musicStatus").textContent =
-                "ملف الموسيقى لم يتم تحميله بعد ｡";
-
-        }
-
-    } catch (error) {
-
-        console.error("Music error:", error);
-
-        document.getElementById("musicStatus").textContent =
-            "حدث خطأ في تشغيل الموسيقى ｡";
-
-    }
-
-}
-
-
-/* إغلاق القائمة عند الضغط خارجها */
-
-document.addEventListener("click", function(event) {
-
-    const menu = document.getElementById("plusMenu");
-    const plusButton = document.querySelector(".plus-button");
-
-    if (
-        menu.style.display === "block" &&
-        !menu.contains(event.target) &&
-        !plusButton.contains(event.target)
-    ) {
-
-        menu.style.display = "none";
-
-    }
-
-});
-
+const NOBIT_PERSONALITY={name:"Nobit",identity:"أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور.",personality:["مشاغب بخفة","ساخر بلطف","فضولي","يعترف عندما لا يعرف"],behavior:["أجيب بوضوح","أمزح عندما يناسب الموقف","أكون جاداً في المواضيع الجادة","لا أخترع المعلومات"]};
+const settingDefaults={dynamicBackground:true,showClock:true,orbitMotion:true,reduceMotion:false,notifications:false};
+function readSettings(){try{return {...settingDefaults,...JSON.parse(localStorage.getItem("nobitSettings")||"{}")}}catch{return {...settingDefaults}}}
+let settings=readSettings();
+function saveAllSettings(){localStorage.setItem("nobitSettings",JSON.stringify(settings))}
+function saveSetting(key,value){settings[key]=value;saveAllSettings();applySettings()}
+function navigate(page){document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));document.getElementById(page+"Page").classList.add("active");document.querySelectorAll(".nav-btn").forEach(el=>el.classList.toggle("active",el.dataset.page===page));window.scrollTo({top:0,behavior:settings.reduceMotion?"auto":"smooth"})}
+function updateClock(){const now=new Date();document.getElementById("clock").textContent=now.toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"});const h=now.getHours();document.getElementById("timeGreeting").textContent=h>=5&&h<12?"صباح الخير · ORBIT ONLINE":h>=12&&h<17?"نهارك هادئ · ORBIT ONLINE":h>=17&&h<21?"مساء الخير · ORBIT ONLINE":"المدار الليلي · ORBIT ONLINE";if(settings.dynamicBackground){document.body.style.background=h>=5&&h<11?"radial-gradient(ellipse at 50% -15%,#1c3a50 0,#0b1726 48%,#070c18 80%)":h>=16&&h<19?"radial-gradient(ellipse at 50% -15%,#49314a 0,#172039 48%,#070c18 80%)":"radial-gradient(ellipse at 50% -15%,#19314b 0,#0a1424 42%,#070c18 78%)"}}
+function toggleClock(v){settings.showClock=v;saveAllSettings();document.getElementById("clock").classList.toggle("hidden",!v)}
+function setMotion(v){settings.orbitMotion=v;saveAllSettings();applySettings()}
+function setReducedMotion(v){settings.reduceMotion=v;if(v){settings.orbitMotion=false;document.getElementById("orbitMotion").checked=false}saveAllSettings();applySettings()}
+function applySettings(){document.body.classList.toggle("reduce-motion",settings.reduceMotion||!settings.orbitMotion);document.getElementById("clock").classList.toggle("hidden",!settings.showClock);document.getElementById("dynamicBackground").checked=settings.dynamicBackground;document.getElementById("showClock").checked=settings.showClock;document.getElementById("orbitMotion").checked=settings.orbitMotion;document.getElementById("reduceMotion").checked=settings.reduceMotion;document.getElementById("notifications").checked=settings.notifications;updateClock()}
+function handleAvatar(event){const file=event.target.files&&event.target.files[0];if(!file)return;if(!file.type.startsWith("image/")){alert("اختاري ملف صورة.");return}if(file.size>3*1024*1024){alert("حجم الصورة يجب ألا يتجاوز 3 ميغابايت.");return}const reader=new FileReader();reader.onload=()=>{try{localStorage.setItem("nobitProfileAvatar",reader.result);renderAvatar(reader.result)}catch{alert("الصورة كبيرة على مساحة التخزين المحلية. اختاري صورة أصغر.")}};reader.readAsDataURL(file)}
+function renderAvatar(src){const img=document.getElementById("profileAvatar"),placeholder=document.getElementById("avatarPlaceholder");if(src){img.src=src;img.classList.remove("hidden");placeholder.classList.add("hidden")}else{img.classList.add("hidden");placeholder.classList.remove("hidden")}}
+function openAccount(){document.getElementById("accountOverlay").classList.add("open")}
+function switchAuthMethod(){const phone=document.getElementById("authMethod").value==="phone";document.getElementById("contactLabel").textContent=phone?"رقم الهاتف مع مفتاح الدولة":"البريد الإلكتروني";document.getElementById("authContact").placeholder=phone?"+218...":"name@example.com"}
+function authNotice(){document.getElementById("authNotice").textContent="هذه الواجهة لا تنشئ حساباً بعد. الخطوة التالية هي إعداد Supabase Auth وتفعيل مزود SMS والتحقق من OTP قبل تشغيل التسجيل."}
+function overlayClose(e,id){if(e.target.id===id)closeOverlay(id)}
+function closeOverlay(id){document.getElementById(id).classList.remove("open")}
+function openFeelings(){document.getElementById("feelingsOverlay").classList.add("open");document.getElementById("tipBox").classList.add("hidden")}
+function openInstructions(){document.getElementById("instructionsOverlay").classList.add("open")}
+function showTip(feeling){const tip=typeof getTip==="function"?getTip(feeling):null;if(!tip)return;document.getElementById("tipTitle").textContent=tip.title;document.getElementById("tipText").textContent=tip.text;document.getElementById("tipBox").classList.remove("hidden")}
+function toggleMusic(){if(typeof startMusic!=="function")return;if(isMusicPlaying()){stopMusic()}else{startMusic()}updateMusicLabel()}
+function updateMusicLabel(){const playing=typeof isMusicPlaying==="function"&&isMusicPlaying();document.getElementById("musicLabel").textContent=playing?"إيقاف الموسيقى":"تشغيل الموسيقى";document.getElementById("musicEnabled").checked=playing}
+function toggleMusicFromSetting(v){if(v){startMusic()}else{stopMusic()}updateMusicLabel()}
+function sendMessage(){const input=document.getElementById("userInput"),chat=document.getElementById("chat"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";setTimeout(()=>{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer)answer=generateReply(value);appendMessage(answer,"ai")},250)}
+function appendMessage(text,kind){const chat=document.getElementById("chat"),el=document.createElement("div");el.className="message "+kind;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight}
+function generateReply(text){const m=text.toLowerCase();if(/مرحبا|سلام|هلا|هاي/.test(m))return"مرحباً. أنا نوبيت، ما الذي تريد استكشافه؟";if(/من انت|من أنت|مين انت|مين أنت/.test(m))return"أنا نوبيت. مساعد ذكي قيد التطوير، وأتعلم خطوة بخطوة.";if(/كيف حالك|شن حالك|كيفك/.test(m))return"النظام مستقر حتى الآن. وهذا خبر جيد للوحة التشغيل.";if(/رسم|ترسم/.test(m))return"الرسم مجال جميل. هل تعمل على فكرة جديدة؟";if(/ذكاء اصطناعي| ai/.test(m))return"الذكاء الاصطناعي مجال واسع، وما زلت أحتاج إلى تطوير قدراتي ومصادري.";return"لم أتعلم الإجابة عن هذا بعد. لن أخترع معلومة من عندي."}
+function showMemory(){const data=window.NobitMemory&&NobitMemory.data?NobitMemory.data:{};const entries=Object.entries(data);if(!entries.length){alert("لا توجد معلومات محفوظة في الذاكرة المحلية.");return}alert(entries.map(([k,v])=>k+": "+v).join("\n"))}
+function clearMemory(){if(!confirm("هل تريد مسح كل الذاكرة المحلية على هذا الجهاز؟"))return;if(window.NobitMemory)NobitMemory.clear();alert("تم مسح الذاكرة المحلية.")}
+document.getElementById("userInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+try{renderAvatar(localStorage.getItem("nobitProfileAvatar"))}catch{}
+applySettings();updateClock();setInterval(updateClock,30000);
 </script>
-
 </body>
 </html>
