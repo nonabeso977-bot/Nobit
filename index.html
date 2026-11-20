@@ -58,6 +58,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 <section class="page" id="worldPage">
  <h1 class="page-title">العالم</h1><p class="page-description">مساحة العالم قيد البناء. ستُضاف الكرة الأرضية التفاعلية وملفات الدول ومصادر المعلومات في مرحلة مستقلة.</p>
  <div class="panel world-card"><div><div class="globe">🌐</div><h2>World Intelligence</h2><p class="hint">وحدة الاستكشاف العالمي</p><span class="status-note">الواجهة التمهيدية جاهزة. لم يتم ربط بيانات الدول أو الأخبار بعد.</span></div></div>
+ <div class="section-head"><h2>معرفة نوبيت المحلية</h2><span>دروس المطوّرة</span></div><div class="panel" id="worldKnowledge"><p class="hint">ستظهر هنا الدروس الليبية التي تم تعليمها لنوبيت، مع توضيح مصدرها.</p></div>
 </section>
 
 <section class="page" id="settingsPage">
@@ -112,7 +113,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
  <h2>إرشادات الاستخدام</h2><p>يمكنك استخدام المحادثة للتجربة، وتغيير إعدادات الواجهة، واختيار صورة ملفك الشخصي. بعض الوظائف مثل الحساب السحابي والبحث العالمي ما زالت تحتاج إلى ربط خدماتها الخلفية.</p><div class="close-row"><button class="small-btn" onclick="closeOverlay('instructionsOverlay')">فهمت</button></div>
 </div></div>
 
-<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script>
+<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="learning.js"></script>
 <script>
 const NOBIT_PERSONALITY={name:"Nobit",identity:"أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور.",personality:["مشاغب بخفة","ساخر بلطف","فضولي","يعترف عندما لا يعرف"],behavior:["أجيب بوضوح","أمزح عندما يناسب الموقف","أكون جاداً في المواضيع الجادة","لا أخترع المعلومات"]};
 const settingDefaults={dynamicBackground:true,showClock:true,orbitMotion:true,reduceMotion:false,notifications:false};
@@ -134,14 +135,16 @@ function authNotice(){document.getElementById("authNotice").textContent="هذه 
 function overlayClose(e,id){if(e.target.id===id)closeOverlay(id)}
 function closeOverlay(id){document.getElementById(id).classList.remove("open")}
 function openInstructions(){document.getElementById("instructionsOverlay").classList.add("open")}
-function sendMessage(){const input=document.getElementById("userInput"),chat=document.getElementById("chat"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";setTimeout(()=>{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer)answer=generateReply(value);appendMessage(answer,"ai")},250)}
+function sendMessage(){const input=document.getElementById("userInput"),chat=document.getElementById("chat"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";setTimeout(()=>{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer&&window.NobitLearning){const learned=NobitLearning.answer(value);if(learned)answer=learned.text+"\n\n"+learned.origin+(learned.source?" · المصدر: "+learned.source:"")}if(!answer)answer=generateReply(value);appendMessage(answer,"ai")},250)}
 function appendMessage(text,kind){const chat=document.getElementById("chat"),el=document.createElement("div");el.className="message "+kind;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight}
 function generateReply(text){const m=text.toLowerCase();if(/مرحبا|سلام|هلا|هاي/.test(m))return"مرحباً. أنا نوبيت، ما الذي تريد استكشافه؟";if(/من انت|من أنت|مين انت|مين أنت/.test(m))return"أنا نوبيت. مساعد ذكي قيد التطوير، وأتعلم خطوة بخطوة.";if(/كيف حالك|شن حالك|كيفك/.test(m))return"النظام مستقر حتى الآن. وهذا خبر جيد للوحة التشغيل.";if(/رسم|ترسم/.test(m))return"الرسم مجال جميل. هل تعمل على فكرة جديدة؟";if(/ذكاء اصطناعي| ai/.test(m))return"الذكاء الاصطناعي مجال واسع، وما زلت أحتاج إلى تطوير قدراتي ومصادري.";return"لم أتعلم الإجابة عن هذا بعد. لن أخترع معلومة من عندي."}
+function renderWorldKnowledge(){const box=document.getElementById("worldKnowledge");if(!box||!window.NobitLearning)return;const items=NobitLearning.all().filter(x=>["culture","geography","history","language"].includes(x.category));if(!items.length){box.innerHTML='<p class="hint">لم تُضف دروس محلية بعد. عندما تعلّمين نوبيت معلومة، ستظهر هنا أيضاً.</p>';return}box.innerHTML=items.slice(0,8).map(x=>'<article style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>'+escapeHtmlText(x.title)+'</strong><p style="white-space:pre-wrap;line-height:1.8;color:#a9bdd0">'+escapeHtmlText(x.content)+'</p><small style="color:var(--teal)">تعليم المطوّرة · '+(NobitLearning.categories[x.category]||"معرفة")+'</small></article>').join("")}
+function escapeHtmlText(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function showMemory(){const data=window.NobitMemory&&NobitMemory.data?NobitMemory.data:{};const entries=Object.entries(data);if(!entries.length){alert("لا توجد معلومات محفوظة في الذاكرة المحلية.");return}alert(entries.map(([k,v])=>k+": "+v).join("\n"))}
 function clearMemory(){if(!confirm("هل تريد مسح كل الذاكرة المحلية على هذا الجهاز؟"))return;if(window.NobitMemory)NobitMemory.clear();alert("تم مسح الذاكرة المحلية.")}
 document.getElementById("userInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
 try{renderAvatar(localStorage.getItem("nobitProfileAvatar"))}catch{}
-applySettings();updateClock();setInterval(updateClock,30000);
+applySettings();updateClock();renderWorldKnowledge();setInterval(updateClock,30000);
 </script>
 </body>
 </html>
