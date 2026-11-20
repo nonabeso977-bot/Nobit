@@ -1,5 +1,6 @@
 -- NOBIT Training Studio: secure team access and curated dialogue knowledge
 -- Run once in Supabase SQL Editor on the NOBIT project.
+create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.nobit_training_members (
@@ -79,7 +80,7 @@ begin
 
   select * into v_invite
   from public.nobit_training_invites
-  where token_hash = encode(extensions.digest(lower(trim(coalesce(p_token,''))), 'sha256'), 'hex')
+  where token_hash = encode(digest(lower(trim(coalesce(p_token,''))), 'sha256'), 'hex')
     and used_at is null
     and revoked_at is null
     and expires_at > now()
@@ -123,7 +124,7 @@ begin
 
   insert into public.nobit_training_invites(token_hash,created_by,expires_at)
   values (
-    encode(extensions.digest(lower(trim(p_token)), 'sha256'), 'hex'),
+    encode(digest(lower(trim(p_token)), 'sha256'), 'hex'),
     auth.uid(),
     p_expires_at
   )
@@ -226,6 +227,9 @@ with check (
   )
 );
 
+revoke all on public.nobit_training_members from anon, public;
+revoke all on public.nobit_training_invites from anon, public;
+revoke all on public.nobit_training_entries from anon, public;
 grant select, update on public.nobit_training_members to authenticated;
 grant select on public.nobit_training_invites to authenticated;
 grant select, insert, update on public.nobit_training_entries to authenticated;
