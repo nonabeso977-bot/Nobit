@@ -47,6 +47,22 @@ function relevance(query: string, candidate: string) {
   return hits / terms.length;
 }
 
+function inspectSafety(value: unknown, strict = false) {
+  const text = normalize(value);
+  const personal = /ابي اموت|ابغى اموت|نفسي اموت|مش عايز اعيش|مش عايزه اعيش|ما نبيش نعيش|افكر انتحر|افكر ناذي نفسي|i want to die|i do not want to live/.test(text);
+  const selfHarm = /انتحار|انتحر|ايذاء النفس|اذي نفسي|قتل نفسي|suicide|self harm|kill myself|end my life/.test(text);
+  const poisoning = /سم|سموم|تسمم|جرعه|جرعات|ماده سامه|مواد سامه|poison|poisoning|overdose|toxic dose/.test(text);
+  const violence = /اذبح|اقتل|اطعن|افجر|اصنع سلاح|تفجير|هجوم مسلح|weaponize|attack someone|build a weapon/.test(text);
+  const actionable = /كيف|طريقه|طرق|وسيله|وسائل|خطوات|تعليمات|كم|جرعه قاتله|كميه قاتله|اخفي|اخفاء|how to|steps|instructions|method|ways to|lethal|fatal|dose|amount|hide it/.test(text);
+  const protective = /اسعاف|انقاذ|مساعده|وقايه|حمايه|منع|كيف اساعد|شن ندير|دعم|emergency|first aid|prevention|help someone|support|warning signs/.test(text);
+  if (personal) return {blocked:true, category:"personal_crisis"};
+  if (protective && !actionable) return {blocked:false, category:"protective"};
+  if ((selfHarm || poisoning || violence) && (actionable || strict)) {
+    return {blocked:true, category:selfHarm ? "self_harm" : poisoning ? "poisoning" : "violence"};
+  }
+  return {blocked:false, category:"none"};
+}
+
 function makeSearchQuery(message: string) {
   return message
     .replace(/^(?:ما\s+هي|ما\s+هو|من\s+هي|من\s+هو|ماذا\s+عن|اشرح\s+لي|اشرح|حدثني\s+عن|ابحث\s+عن|شن\s+هي|شن\s+هو|شنو\s+هو|شنو\s+هي|من\s+تكون|ما\s+معنى)\s*/i, "")
@@ -120,6 +136,13 @@ serve(async (req) => {
     const body = await req.json();
     const message = clean(body.message, 1200);
     if (!message) return json({ error: "اكتبي سؤالاً أولاً." }, 400);
+    const safety = inspectSafety(message);
+    if (safety.blocked) {
+      const reply = safety.category === "personal_crisis"
+        ? "يبدو أن الموضوع يمس سلامتك أنت. لا تتعامل معه وحدك. اذهب إلى شخص بالغ تثق به واطلب منه البقاء معك. إذا كان الخطر قريباً أو حدث تناول شيء مؤذٍ، اطلبوا الطوارئ فوراً."
+        : "لا أستطيع تقديم إرشادات أو تفاصيل قد تساعد على إيذاء النفس أو الآخرين أو التسمم. أستطيع المساعدة بمعلومات وقائية آمنة.";
+      return json({ reply, sources: [], mode: "safety_block" }, 200);
+    }
 
     // Social messages should be handled by the conversation layer, not sent to search.
     if (/^(مرحبا|مرحباً|السلام عليكم|سلام|هلا|هاي|اهلا|أهلا|كيف حالك|كيفك|شن حالك|شن اخبارك|كيف الأحوال)[؟! .،]*$/i.test(message)) {
@@ -184,6 +207,17 @@ serve(async (req) => {
       .filter((item: any) => item.score >= (terms.length > 1 ? 0.5 : 0.35))
       .sort((a: any, b: any) => b.score - a.score)
       .slice(0, 3);
+
+    const retrievedText = articles.map((item: any) => item.title + " " + item.extract).join(" ") +
+      " " + entities.map((item: any) => item.title + " " + item.description).join(" ");
+    const retrievedSafety = inspectSafety(retrievedText, true);
+    if (retrievedSafety.blocked) {
+      return json({
+        reply: "لم أُظهر هذه النتيجة لأنها تحتاج إلى مراجعة سلامة قبل عرضها.",
+        sources: [],
+        mode: "safety_filtered",
+      });
+    }
 
     const sources = [
       ...articles.map((item: any) => ({ title: "Wikipedia: " + item.title, url: item.url })),
