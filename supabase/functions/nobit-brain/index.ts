@@ -1,6 +1,6 @@
 // NOBIT BRAIN - Supabase Edge Function
 // Required Supabase secret: OPENAI_API_KEY
-// Optional secret: OPENAI_MODEL (defaults to gpt-4.1-mini)
+// Optional secret: OPENAI_MODEL (defaults to gpt-6.2-astra)
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const corsHeaders = {
