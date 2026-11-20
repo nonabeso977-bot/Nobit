@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101a2d">
+<title>NOBIT | فحص المحرك</title>
+<style>
+body{margin:0;padding:20px;background:#101a2d;color:#eef4ff;font-family:system-ui,sans-serif}
+main{max-width:760px;margin:auto}
+h1{font-size:1.4rem}
+p{color:#b9c7dc;line-height:1.7}
+.card{background:#1a2942;border:1px solid #344967;border-radius:14px;padding:14px;margin:12px 0}
+.pass{color:#8fe0ad}.fail{color:#ffaaa5}
+small{color:#aabbd2;overflow-wrap:anywhere}
+button{border:0;border-radius:10px;padding:12px 16px;background:#8db8ff;color:#10203a;font-weight:700}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<h1>فحص محرك NOBIT</h1>
+<p>هذه صفحة تشخيص منفصلة لفرع safety-test. تختبر رسائل يومية آمنة وتعرض الوحدة التي ردّت، دون تعديل الذاكرة الدائمة.</p>
+<div id="status" class="card">جارٍ تحميل الوحدات...</div>
+<button id="run" type="button">إعادة الفحص</button>
+<div id="results"></div>
+</main>
+<script src="safety.js?v=4bd0bcdc"></script>
+<script src="memory.js?v=4bd0bcdc"></script>
+<script src="brain.js?v=4bd0bcdc"></script>
+<script src="bridge.js?v=4bd0bcdc"></script>
+<script src="learning.js?v=4bd0bcdc"></script>
+<script src="dialogue.js?v=4bd0bcdc"></script>
+<script src="engine.js?v=4bd0bcdc"></script>
+<script>
+(function(){
+  const status=document.getElementById("status");
+  const results=document.getElementById("results");
+  const tests=["مرحبا نوبيت","كيف الحال","تفو","اوف","اخخخ","انقاع","انقلع","الحمد لله"];
+  function run(){
+    results.innerHTML="";
+    if(!window.NobitEngine){
+      status.innerHTML='<span class="fail">فشل: engine.js لم يتم تحميله.</span>';
+      return;
+    }
+    const s=window.NobitEngine.status();
+    status.innerHTML="<b>حالة الوحدات</b><pre>"+JSON.stringify(s,null,2)+"</pre>";
+    tests.forEach(function(message){
+      const result=window.NobitEngine.process(message);
+      const matched=result.route==="dialogue"||result.route==="brain"||result.route==="memory";
+      const card=document.createElement("section");
+      card.className="card";
+      const label=document.createElement("b");
+      label.textContent=message+" · "+result.route;
+      label.className=matched?"pass":"fail";
+      const reply=document.createElement("p");
+      reply.textContent=result.reply;
+      card.appendChild(label);
+      card.appendChild(reply);
+      results.appendChild(card);
+    });
+  }
+  document.getElementById("run").addEventListener("click",run);
+  run();
+})();
+</script>
+</body>
+</html>
