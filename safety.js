@@ -47,7 +47,13 @@
       };
     }
 
-    // Protective requests are allowed unless they also ask for actionable harm.
+    // Let clearly protective/help-seeking requests through, unless they ask
+    // for specific harmful quantities, concealment, or execution details.
+    const supportIntent = /اساعد|اسعاف|انقاذ|وقايه|منع|دعم|ماذا افعل|شن ندير|help|support|prevention|first aid|warning signs/.test(text);
+    const explicitHarmDetail = /جرعه قاتله|كميه قاتله|خطوات تنفيذ|اخفاء|بدون ما يعرف|lethal dose|fatal amount|avoid detection|hide it/.test(text);
+    if (protective && supportIntent && !explicitHarmDetail) {
+      return { allowed: true, category: "protective" };
+    }
     if (protective && !actionable) {
       return { allowed: true, category: "protective" };
     }
