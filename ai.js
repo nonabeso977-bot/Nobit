@@ -14,9 +14,9 @@
       return Boolean(c.projectUrl && c.anonKey);
     },
     saveConfig(projectUrl, anonKey) {
-      const url = String(projectUrl || "").trim().replace(/\\/+$/, "");
+      const url = String(projectUrl || "").trim().replace(/\/+$/, "");
       const key = String(anonKey || "").trim();
-      if (!/^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(url)) {
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
         throw new Error("رابط مشروع Supabase غير صحيح. استخدمي رابط المشروع الأساسي.");
       }
       if (!key) throw new Error("أضيفي مفتاح anon العام.");
