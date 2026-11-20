@@ -88,7 +88,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
    <p class="hint">مزامنة الذاكرة بين الأجهزة وسياسات الخصوصية السحابية تحتاج ربط قاعدة البيانات لاحقاً.</p>
   </div>
   <div class="panel setting-card"><h3>اتصال دماغ نوبيت</h3>
-   <p class="hint">يربط المحادثة بنموذج الذكاء الاصطناعي عبر Supabase. المفتاح السري يبقى داخل الخادم. تُرسل الرسائل الأخيرة والدروس إلى مزود النموذج لمعالجتها، أما الذاكرة الشخصية المحلية فلا تُرسل. لا تضعي معلومات حساسة هنا.</p>
+   <p class="hint">يربط المحادثة بمحرك معرفة مستقل عبر Supabase. يبحث في ويكيبيديا وويكيداتا ويسترجع الدروس المحلية. لا يحتاج إلى مفتاح OpenAI أو خدمة نموذج مدفوعة. لا تضعي معلومات حساسة هنا.</p>
    <div class="form-stack">
     <label><span class="form-label">رابط مشروع Supabase</span><input class="field-input" id="nobitProjectUrl" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off"></label>
     <label><span class="form-label">مفتاح anon العام (JWT)</span><input class="field-input" id="nobitAnonKey" type="password" placeholder="المفتاح العام للمشروع" autocomplete="off"></label>
@@ -156,8 +156,8 @@ function clearMemory(){if(!confirm("هل تريد مسح كل الذاكرة ا�
 document.getElementById("userInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
 try{renderAvatar(localStorage.getItem("nobitProfileAvatar"))}catch{}
 applySettings();updateClock();renderWorldKnowledge();loadNobitAiConfig();setInterval(updateClock,30000);
-function loadNobitAiConfig(){const c=window.NobitAI&&NobitAI.config?NobitAI.config():{};const url=document.getElementById("nobitProjectUrl"),key=document.getElementById("nobitAnonKey"),status=document.getElementById("nobitAiStatus");if(url)url.value=c.projectUrl||"";if(key)key.value=c.anonKey||"";if(status)status.textContent=c.projectUrl?"إعدادات الاتصال محفوظة على هذا الجهاز. يلزم نشر Edge Function وإضافة OPENAI_API_KEY في أسرار Supabase.":"لم يتم إعداد اتصال الدماغ بعد."}
-function saveNobitAiConfig(){try{NobitAI.saveConfig(document.getElementById("nobitProjectUrl").value,document.getElementById("nobitAnonKey").value);document.getElementById("nobitAiStatus").textContent="تم حفظ الإعدادات محلياً. تبقى خطوة نشر الدالة وإعداد مفتاح النموذج على Supabase.";alert("تم حفظ إعداد اتصال نوبيت على هذا الجهاز.");}catch(error){alert(error.message)}}
+function loadNobitAiConfig(){const c=window.NobitAI&&NobitAI.config?NobitAI.config():{};const url=document.getElementById("nobitProjectUrl"),key=document.getElementById("nobitAnonKey"),status=document.getElementById("nobitAiStatus");if(url)url.value=c.projectUrl||"";if(key)key.value=c.anonKey||"";if(status)status.textContent=c.projectUrl?"إعدادات الاتصال محفوظة على هذا الجهاز. يلزم نشر نسخة محرك المعرفة من Edge Function.":"لم يتم إعداد اتصال الدماغ بعد."}
+function saveNobitAiConfig(){try{NobitAI.saveConfig(document.getElementById("nobitProjectUrl").value,document.getElementById("nobitAnonKey").value);document.getElementById("nobitAiStatus").textContent="تم حفظ الإعدادات محلياً. تأكدي من نشر آخر نسخة من محرك المعرفة في Supabase.";alert("تم حفظ إعداد اتصال نوبيت على هذا الجهاز.");}catch(error){alert(error.message)}}
 </script>
 </body>
 </html>
