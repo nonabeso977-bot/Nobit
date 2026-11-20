@@ -26,7 +26,6 @@
       const c = readConfig();
       if (!c.projectUrl || !c.anonKey) throw new Error("لم يتم إعداد اتصال Supabase بعد.");
       const lessons = window.NobitLearning ? NobitLearning.all().slice(0, 35) : [];
-      const memory = window.NobitMemory ? NobitMemory.data : {};
       const response = await fetch(c.projectUrl + "/functions/v1/nobit-brain", {
         method: "POST",
         headers: {
@@ -41,7 +40,6 @@
             content: String(item.content || "").slice(0, 3000)
           })),
           lessons,
-          memory
         })
       });
       const data = await response.json().catch(() => ({}));
