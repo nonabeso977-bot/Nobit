@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080e1c">
+<title>NOBIT | Training Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#080e1c;--panel:#111e31;--panel2:#172940;--line:#34516a;--text:#eaf4ff;--muted:#9ab0c5;--cyan:#70d9ee;--teal:#6ce0c0;--red:#ff9aa6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#1a3852,var(--bg) 65%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}.wrap{max-width:980px;margin:auto;padding:24px 16px 60px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}.brand{font-weight:800;letter-spacing:2px}.brand small{display:block;color:var(--muted);font-weight:400;letter-spacing:1px;margin-top:5px}.panel{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid #34516a88;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 14px 35px #0003}.muted,.hint{color:var(--muted);line-height:1.8;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.stack{display:grid;gap:10px}.label{font-size:12px;color:#b9cbdc}.field{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#091321;color:var(--text);font:inherit}.btn{border:0;border-radius:12px;padding:12px 17px;background:linear-gradient(110deg,var(--cyan),var(--teal));color:#06131c;font-weight:bold;font:inherit;cursor:pointer}.btn.secondary{background:#1a334a;color:var(--text);border:1px solid var(--line)}.btn.danger{background:#48232e;color:#ffdce0}.btn:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hidden{display:none!important}.status{padding:12px;border-radius:12px;background:#0b1928;color:#b9dce8;line-height:1.8;font-size:13px;margin-top:12px;white-space:pre-wrap}.status.error{color:#ffc1c7;border:1px solid #87424d}.entry{border:1px solid #34516a88;border-radius:14px;padding:14px;margin-top:10px;background:#0d1a2b}.entry h3{margin:0 0 8px;font-size:15px}.entry p{white-space:pre-wrap;line-height:1.8;margin:7px 0;color:#d4e2ef}.tag{display:inline-block;border-radius:20px;padding:4px 9px;font-size:11px;background:#19384b;color:var(--cyan)}.tag.approved{color:var(--teal)}.tag.rejected{color:#ffadb5;background:#3c2029}h1{font-size:26px;margin:0 0 8px}h2{font-size:18px;margin:0 0 14px}.token{word-break:break-all;direction:ltr;text-align:left;background:#07111e;border:1px dashed var(--cyan);padding:12px;border-radius:12px;font-family:monospace}.tiny{font-size:11px;color:var(--muted)}@media(max-width:680px){.grid{grid-template-columns:1fr}.wrap{padding:16px 12px 40px}.panel{padding:16px}.head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="head"><div class="brand">NOBIT <span style="color:var(--cyan)">✧</span><small>TRAINING STUDIO · PRIVATE TEAM</small></div><div class="row"><span id="who" class="tiny">غير متصل</span><button id="logoutBtn" class="btn secondary hidden">خروج</button></div></header>
+<section id="authPanel" class="panel">
+<h1>مساحة تدريب نوبيت</h1>
+<p class="muted">الدخول يتطلب حساباً ورمز دعوة صالحاً. رابط الصفحة وحده لا يمنح صلاحية.</p>
+<div class="grid">
+<div class="stack">
+<label class="label">البريد الإلكتروني<input id="email" class="field" type="email" autocomplete="email" placeholder="name@example.com"></label>
+<label class="label">كلمة المرور<input id="password" class="field" type="password" autocomplete="current-password" placeholder="كلمة المرور"></label>
+<label class="label">رمز الدعوة (للمتعاونين الجدد)<input id="invite" class="field" autocomplete="one-time-code" placeholder="الصقي رمز الدعوة هنا"></label>
+<div class="row"><button id="loginBtn" class="btn">تسجيل الدخول</button><button id="signupBtn" class="btn secondary">إنشاء حساب</button></div>
+</div>
+<div class="stack"><h2>طريقة الدخول</h2><p class="muted">1. ينشئ المتعاون حساباً ببريده الإلكتروني.<br>2. يستخدم رمز الدعوة الشخصي مرة واحدة لتفعيل العضوية.<br>3. بعد ذلك يسجل الدخول بالبريد وكلمة المرور فقط.</p><p class="hint">إذا كان تأكيد البريد مفعّلاً في Supabase، أكّد البريد أولاً ثم سجّل الدخول وأدخل رمز الدعوة.</p></div>
+</div>
+<div id="authStatus" class="status">أدخلي إعدادات مشروع Supabase في صفحة NOBIT الرئيسية أولاً إذا لم تكن محفوظة على هذا الجهاز.</div>
+</section>
+<section id="studio" class="hidden">
+<div class="panel"><div class="row" style="justify-content:space-between"><div><h1>Training Studio</h1><p id="roleLine" class="muted">مساحة تدريب مشتركة</p></div><span id="roleTag" class="tag">عضو</span></div><div id="memberTools" class="row hidden"><button id="newInviteBtn" class="btn secondary">إنشاء رمز دعوة</button></div><div id="inviteResult" class="hidden status"></div></div>
+<div class="grid">
+<section class="panel"><h2>إضافة رد تدريبي</h2><div class="stack">
+<label class="label">الكلمة أو العبارة<input id="phrase" class="field" maxlength="240" placeholder="مثلاً: كيف الحال؟"></label>
+<label class="label">الرد المقترح<textarea id="reply" class="field" rows="4" maxlength="1200" placeholder="اكتبي الرد الذي تقترحينه لنوبيت"></textarea></label>
+<label class="label">التصنيف<input id="category" class="field" maxlength="60" placeholder="تحية، سؤال، مزاح..."></label>
+<button id="submitEntry" class="btn">إرسال للمراجعة</button><p class="hint">كل اقتراح يبدأ كمسودة. لن يصبح جزءاً من معرفة نوبيت إلا بعد اعتماده.</p>
+</div></section>
+<section class="panel"><h2>قواعد التدريب</h2><p class="muted">اكتبي العبارة كما قد يرسلها المستخدم، ثم الرد المقترح. تجنبي إدخال معلومات شخصية أو أسرار أو تعليمات قد تسبب ضرراً. الردود الحساسة تحتاج مراجعة خاصة ولا تُعتمد آلياً.</p><div id="ownerNote" class="status hidden">أنتِ صاحبة مساحة التدريب. يمكنك اعتماد الاقتراحات وإدارة الدعوات.</div></section>
+</div>
+<section class="panel"><div class="row" style="justify-content:space-between"><h2>مقترحات الفريق</h2><button id="refreshBtn" class="btn secondary">تحديث</button></div><div id="entries"><p class="muted">جاري تحميل المقترحات...</p></div></section>
+<div id="studioStatus" class="status hidden"></div>
+</section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const say = (id, message, error=false) => { const el=$(id); el.textContent=message; el.classList.remove("hidden"); el.classList.toggle("error",error); };
+  let client=null, user=null, member=null;
+  function config(){
+    try {
+      const c=JSON.parse(localStorage.getItem("nobitAiConfigV1")||"{}");
+      if(!c.projectUrl||!c.anonKey) throw new Error("إعدادات Supabase غير موجودة. افتحي إعدادات NOBIT واحفظي رابط المشروع ومفتاح anon.");
+      return c;
+    } catch(e){ throw e; }
+  }
+  function setup(){ if(!window.supabase?.createClient) throw new Error("تعذر تحميل مكتبة الاتصال. تحققي من الإنترنت."); const c=config(); client=window.supabase.createClient(c.projectUrl,c.anonKey); }
+  async function loadMember(){
+    const {data,error}=await client.from("nobit_training_members").select("user_id,email,role,status").eq("user_id",user.id).maybeSingle();
+    if(error) throw error;
+    if(!data||data.status!=="active") { member=null; $("studio").classList.add("hidden"); $("authPanel").classList.remove("hidden"); say("authStatus","هذا الحساب غير مخوّل لدخول مساحة التدريب. يلزم رمز دعوة صالح أو تفعيل حساب المديرة.",true); return; }
+    member=data;
+    $("who").textContent=user.email||"عضو مسجل";
+    $("authPanel").classList.add("hidden"); $("studio").classList.remove("hidden"); $("logoutBtn").classList.remove("hidden");
+    $("roleTag").textContent=member.role==="owner"?"مديرة التدريب":"متعاون";
+    $("roleLine").textContent=member.role==="owner"?"لديك صلاحية إدارة الدعوات واعتماد الردود.":"يمكنك إضافة مقترحات ومراجعة ردودك.";
+    $("memberTools").classList.toggle("hidden",member.role!=="owner");
+    $("ownerNote").classList.toggle("hidden",member.role!=="owner");
+    await loadEntries();
+  }
+  async function redeemIfProvided(){
+    const token=$("invite").value.trim()||sessionStorage.getItem("nobitPendingInvite")||"";
+    if(!token) return;
+    const {error}=await client.rpc("redeem_nobit_training_invite",{p_token:token});
+    if(error) throw error;
+    sessionStorage.removeItem("nobitPendingInvite"); $("invite").value="";
+  }
+  async function signUp(){
+    try{
+      setup(); const email=$("email").value.trim(), password=$("password").value, token=$("invite").value.trim();
+      if(!email||password.length<8) throw new Error("أدخلي بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل.");
+      if(!token) throw new Error("رمز الدعوة مطلوب لإنشاء حساب متعاون. حساب المديرة يُفعّل يدوياً من SQL Editor.");
+      const {data,error}=await client.auth.signUp({email,password});
+      if(error) throw error;
+      sessionStorage.setItem("nobitPendingInvite",token);
+      if(data.session){ user=data.user; await redeemIfProvided(); await loadMember(); }
+      else say("authStatus","تم إنشاء الحساب. أكّدي بريدك الإلكتروني، ثم سجّلي الدخول وأدخلي رمز الدعوة نفسه لتفعيل العضوية.");
+    }catch(e){say("authStatus",e.message||"تعذر إنشاء الحساب.",true);}
+  }
+  async function login(){
+    try{
+      setup(); const email=$("email").value.trim(), password=$("password").value;
+      if(!email||!password) throw new Error("أدخلي البريد الإلكتروني وكلمة المرور.");
+      const {data,error}=await client.auth.signInWithPassword({email,password});
+      if(error) throw error;
+      user=data.user; await redeemIfProvided(); await loadMember();
+    }catch(e){say("authStatus",e.message||"تعذر تسجيل الدخول.",true);}
+  }
+  async function loadEntries(){
+    const {data,error}=await client.from("nobit_training_entries").select("id,phrase,reply,category,status,created_by,created_at").order("created_at",{ascending:false}).limit(100);
+    if(error) throw error;
+    const root=$("entries"); root.replaceChildren();
+    if(!data?.length){root.innerHTML='<p class="muted">لا توجد مقترحات بعد.</p>';return;}
+    data.forEach(item=>{
+      const box=document.createElement("article"); box.className="entry";
+      const title=document.createElement("h3"); title.textContent=item.phrase;
+      const reply=document.createElement("p"); reply.textContent=item.reply;
+      const meta=document.createElement("div"); meta.className="row";
+      const cat=document.createElement("span"); cat.className="tag"; cat.textContent=item.category||"عام";
+      const state=document.createElement("span"); state.className="tag "+item.status; state.textContent=item.status==="approved"?"معتمد":item.status==="rejected"?"مرفوض":"مسودة";
+      meta.append(cat,state); box.append(title,reply,meta);
+      if(member.role==="owner"&&item.status==="draft"){
+        const actions=document.createElement("div"); actions.className="row"; actions.style.marginTop="10px";
+        const approve=document.createElement("button"); approve.className="btn"; approve.textContent="اعتماد";
+        approve.onclick=()=>review(item.id,true);
+        const reject=document.createElement("button"); reject.className="btn danger"; reject.textContent="رفض";
+        reject.onclick=()=>review(item.id,false);
+        actions.append(approve,reject); box.append(actions);
+      }
+      root.append(box);
+    });
+  }
+  async function review(id,approved){
+    const {error}=await client.rpc("approve_nobit_training_entry",{p_entry_id:id,p_approved:approved});
+    if(error){say("studioStatus",error.message,true);return;}
+    say("studioStatus",approved?"تم اعتماد الرد.":"تم رفض الاقتراح."); await loadEntries();
+  }
+  async function submitEntry(){
+    try{
+      const phrase=$("phrase").value.trim(), reply=$("reply").value.trim(), category=$("category").value.trim()||"general";
+      if(!phrase||!reply) throw new Error("أضيفي العبارة والرد المقترح أولاً.");
+      const {error}=await client.from("nobit_training_entries").insert({phrase,reply,category,status:"draft",created_by:user.id});
+      if(error) throw error;
+      $("phrase").value=""; $("reply").value=""; $("category").value="";
+      say("studioStatus","وصل الاقتراح إلى قائمة المراجعة."); await loadEntries();
+    }catch(e){say("studioStatus",e.message||"تعذر حفظ الاقتراح.",true);}
+  }
+  function randomToken(){const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
+  async function newInvite(){
+    try{
+      const token=randomToken(), expiry=new Date(Date.now()+7*86400000).toISOString();
+      const {error}=await client.rpc("create_nobit_training_invite",{p_token:token,p_expires_at:expiry});
+      if(error) throw error;
+      const box=$("inviteResult"); box.classList.remove("hidden"); box.replaceChildren();
+      const label=document.createElement("p"); label.textContent="رمز دعوة صالح لمدة 7 أيام، ويُستخدم مرة واحدة:";
+      const code=document.createElement("div"); code.className="token"; code.textContent=token;
+      const copy=document.createElement("button"); copy.className="btn secondary"; copy.textContent="نسخ الرمز"; copy.onclick=async()=>{await navigator.clipboard.writeText(token);copy.textContent="تم النسخ";};
+      box.append(label,code,copy);
+    }catch(e){say("studioStatus",e.message||"تعذر إنشاء الدعوة.",true);}
+  }
+  async function logout(){if(client) await client.auth.signOut();user=null;member=null;$("studio").classList.add("hidden");$("authPanel").classList.remove("hidden");$("logoutBtn").classList.add("hidden");$("who").textContent="غير متصل";}
+  $("loginBtn").addEventListener("click",login); $("signupBtn").addEventListener("click",signUp);
+  $("submitEntry").addEventListener("click",submitEntry); $("newInviteBtn").addEventListener("click",newInvite);
+  $("refreshBtn").addEventListener("click",()=>loadEntries().catch(e=>say("studioStatus",e.message,true)));
+  $("logoutBtn").addEventListener("click",logout);
+  try{
+    setup();
+    client.auth.getSession().then(async({data,error})=>{if(error)throw error;if(data.session){user=data.session.user;await redeemIfProvided();await loadMember();}}).catch(e=>say("authStatus",e.message,true));
+    client.auth.onAuthStateChange((_event,session)=>{if(!session){user=null;member=null;$("studio").classList.add("hidden");$("authPanel").classList.remove("hidden");}});
+  }catch(e){say("authStatus",e.message,true);}
+})();
+</script>
+</body>
+</html>
