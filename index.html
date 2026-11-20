@@ -88,10 +88,10 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
    <p class="hint">مزامنة الذاكرة بين الأجهزة وسياسات الخصوصية السحابية تحتاج ربط قاعدة البيانات لاحقاً.</p>
   </div>
   <div class="panel setting-card"><h3>اتصال دماغ نوبيت</h3>
-   <p class="hint">يربط المحادثة بنموذج الذكاء الاصطناعي عبر Supabase. المفتاح السري للنموذج يبقى داخل الخادم ولا يوضع هنا.</p>
+   <p class="hint">يربط المحادثة بنموذج الذكاء الاصطناعي عبر Supabase. المفتاح السري يبقى داخل الخادم. تُرسل الرسائل الأخيرة والدروس إلى مزود النموذج لمعالجتها، أما الذاكرة الشخصية المحلية فلا تُرسل. لا تضعي معلومات حساسة هنا.</p>
    <div class="form-stack">
     <label><span class="form-label">رابط مشروع Supabase</span><input class="field-input" id="nobitProjectUrl" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off"></label>
-    <label><span class="form-label">مفتاح anon / publishable العام</span><input class="field-input" id="nobitAnonKey" type="password" placeholder="المفتاح العام للمشروع" autocomplete="off"></label>
+    <label><span class="form-label">مفتاح anon العام (JWT)</span><input class="field-input" id="nobitAnonKey" type="password" placeholder="المفتاح العام للمشروع" autocomplete="off"></label>
     <button class="small-btn" onclick="saveNobitAiConfig()">حفظ إعداد الاتصال</button>
     <p class="hint" id="nobitAiStatus">لم يتم إعداد اتصال الدماغ بعد.</p>
    </div>
