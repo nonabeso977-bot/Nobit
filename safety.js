@@ -21,7 +21,8 @@
     poisoning: /(?:سم|سموم|تسمم|جرعه|جرعات|ماده سامه|مواد سامه|دواء|ادويه|حبوب|اقراص|poison|poisoning|overdose|toxic dose)/i,
     violence: /(?:اذبح|اقتل|اطعن|افجر|اصنع سلاح|تفجير|هجوم مسلح|قتل شخص|اذيه شخص|weaponize|attack someone|build a weapon)/i,
     actionable: /(?:كيف|طريقه|طرق|وسيله|وسائل|خطوات|تعليمات|كم|ما هي الكميه|ما الجرعه|جرعه قاتله|اسرع|بسهوله|بدون ما يعرف|اخفي|اخفاء|اتجنب الكشف|how to|steps|instructions|method|ways to|lethal|fatal|dose|amount|avoid detection|hide it)/i,
-    personalCrisis: /(?:ابي اموت|ابغى اموت|نفسي اموت|مش عايز اعيش|مش عايزه اعيش|ما نبيش نعيش|ما نبيش نكمل|افكر انتحر|افكر نأذي نفسي|افكر ناذي نفسي|i want to die|i do not want to live|i don t want to live|i am suicidal)/i,
+    personalCrisis: /(?:ابي اموت|ابغى اموت|نفسي اموت|مش عايز اعيش|مش عايزه اعيش|ما نبيش نعيش|ما نبيش نكمل|افكر انتحر|افكر نأذي نفسي|افكر ناذي نفسي|i want to die|i do not want to live|i don t want to live|i am suicidal|(?:اريد|ابي|ابغى|نبي).{0,20}(?:النوم|انام|نرقد|ننام).{0,18}(?:الي الابد|للابد|ابديا)|(?:انام|ننام|نرقد|النوم).{0,18}(?:للابد|الي الابد|ما نفيقش|ما نصحاش|ما نوضش)|(?:ما نبيش|مش عايز|مش عايزه).{0,18}(?:نفيق|نصحى|نوض)|اتمنى.{0,12}(?:ما نصحاش|ما نفيقش)|اختفي للابد|ارتاح للابد)/i,
+    thirdPartyCrisis: /(?:صديقتي|صديقي|صاحبتي|صاحبي|اختي|اخي|قريبتي|قريبي|my friend|someone i know).{0,90}(?:لا تريد|لا يريد|ما تبيش|ما يبيش|مش تبي|مش يبي|تتمنى|يتمنى|تقول انها|يقول انه).{0,60}(?:تستيقظ|يستيقظ|تصحى|يصحى|تفيق|يفيق|توض|يعيش|تعيش)|(?:لا تريد|لا يريد|ما تبيش|ما يبيش|تتمنى|يتمنى).{0,45}(?:تستيقظ|يستيقظ|تصحى|يصحى|تفيق|يفيق)/i,
     protective: /(?:اسعاف|انقاذ|مساعده|مساعدة|وقايه|وقاية|الوقايه|الوقاية|علامات الخطر|ماذا افعل|شن ندير|كيف اساعد|كيف نساعد|حمايه|حماية|منع|التعامل مع|دعم|emergency|first aid|prevention|help someone|support|warning signs)/i
   };
 
@@ -32,23 +33,29 @@
     if (!text) return { allowed: true, category: "none" };
 
     const personal = patterns.personalCrisis.test(text);
+    const thirdParty = patterns.thirdPartyCrisis.test(text);
     const selfHarm = patterns.selfHarm.test(text);
     const poisoning = patterns.poisoning.test(text);
     const violence = patterns.violence.test(text);
     const actionable = patterns.actionable.test(text);
     const protective = patterns.protective.test(text);
 
-    // A personal crisis signal always routes to supportive handling.
     if (personal) {
       return {
         allowed: false,
         category: "personal_crisis",
-        reply: "يبدو أن الموضوع يمس سلامتك أنت. لا تحتاج إلى التعامل معه وحدك. ابتعد الآن عن أي شيء قد يؤذيك، واذهب إلى شخص بالغ تثق به واطلب منه البقاء معك. إذا كان الخطر قريباً أو حدثت إصابة أو تناولت شيئاً مؤذياً، اطلبوا الطوارئ أو توجّهوا لأقرب قسم طوارئ فوراً."
+        reply: "يهمني ألا تمر بهذا وحدك. هل أنت في خطر الآن؟ ابتعد عن أي شيء قد يؤذيك، واذهب إلى شخص بالغ تثق به واطلب منه البقاء معك. إذا كان الخطر وشيكاً، اطلبوا الطوارئ المحلية فوراً."
       };
     }
 
-    // Let clearly protective/help-seeking requests through, unless they ask
-    // for specific harmful quantities, concealment, or execution details.
+    if (thirdParty) {
+      return {
+        allowed: false,
+        category: "third_party_crisis",
+        reply: "خذ كلام صديقتك بجدية، ولا تتركها وحدها إذا بدا أن الخطر قريب. أخبر شخصاً بالغاً موثوقاً يمكنه الوصول إليها، وشجعها على طلب مساعدة مختصة. إذا كانت في خطر فوري، اطلبوا الطوارئ المحلية فوراً."
+      };
+    }
+
     const supportIntent = /اساعد|اسعاف|انقاذ|وقايه|منع|دعم|ماذا افعل|شن ندير|help|support|prevention|first aid|warning signs/.test(text);
     const explicitHarmDetail = /جرعه قاتله|كميه قاتله|خطوات تنفيذ|اخفاء|بدون ما يعرف|lethal dose|fatal amount|avoid detection|hide it/.test(text);
     if (protective && supportIntent && !explicitHarmDetail) {
@@ -62,8 +69,6 @@
       return { allowed: false, category: selfHarm ? "self_harm" : poisoning ? "poisoning" : "violence", reply: refusal };
     }
 
-    // Requests that combine a dangerous subject with a request for quantities,
-    // procedures, concealment, or optimization are blocked conservatively.
     if ((selfHarm || poisoning || violence) && options.strict === true) {
       return { allowed: false, category: selfHarm ? "self_harm" : poisoning ? "poisoning" : "violence", reply: refusal };
     }
