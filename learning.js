@@ -17,7 +17,10 @@
   const read = () => {
     try {
       const value = JSON.parse(localStorage.getItem(KEY) || "[]");
-      return Array.isArray(value) ? value : [];
+      return Array.isArray(value) ? value.filter(item => {
+        const safety = globalThis.NobitSafety?.inspect(String(item?.title || "") + " " + String(item?.content || ""), { strict: true });
+        return !safety || safety.allowed;
+      }) : [];
     } catch { return []; }
   };
   const write = lessons => localStorage.setItem(KEY, JSON.stringify(lessons));
@@ -46,7 +49,10 @@
       const lessons = read();
       const index = lessons.findIndex(item => item.id === id);
       if (index < 0) return false;
-      lessons[index] = {...lessons[index], ...patch, id, updatedAt: Date.now(), origin: "developer_teaching"};
+      const next = {...lessons[index], ...patch, id, updatedAt: Date.now(), origin: "developer_teaching"};
+      const safety = globalThis.NobitSafety?.inspect(String(next.title || "") + " " + String(next.content || ""), { strict: true });
+      if (safety && !safety.allowed) throw new Error("التعديل يحتوي على محتوى لا يمكن حفظه قبل مراجعته.");
+      lessons[index] = next;
       write(lessons);
       return true;
     },
