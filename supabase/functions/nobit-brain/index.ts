@@ -113,6 +113,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
+  // TEMPORARY SAFETY LOCK: disable all public knowledge retrieval until safety review is complete.
+  return json({ error: "محرك المعرفة متوقف مؤقتاً للصيانة واختبارات السلامة." }, 503);
+
   try {
     const body = await req.json();
     const message = clean(body.message, 1200);
