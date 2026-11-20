@@ -1,6 +1,5 @@
 // NOBIT INDEPENDENT KNOWLEDGE ENGINE
-// No OpenAI API, model key, or paid AI provider.
-// Retrieves public knowledge from Arabic/English Wikipedia and Wikidata.
+// Intent-aware retrieval from public Wikipedia and Wikidata sources.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const corsHeaders = {
@@ -18,14 +17,51 @@ const json = (body: unknown, status = 200) =>
 const clean = (value: unknown, max = 300) =>
   String(value || "").replace(/[<>]/g, "").trim().slice(0, max);
 
+function normalize(value: unknown) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .replace(/[؟?!،,.;:()[\]{}"'«»]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const stopWords = new Set([
+  "ما", "ماذا", "متى", "اين", "كيف", "هل", "هو", "هي", "من", "في",
+  "عن", "على", "الى", "مع", "هذا", "هذه", "ذلك", "تلك", "الذي", "التي",
+  "انا", "انت", "انتم", "لي", "له", "لها", "ماهي", "ماهو", "شن", "شنو",
+  "اشرح", "حدثني", "اخبرني", "ابحث", "اريد", "معلومات", "حول"
+]);
+
+function queryTerms(query: string) {
+  return normalize(query).split(" ").filter((word) => word.length > 1 && !stopWords.has(word));
+}
+
+function relevance(query: string, candidate: string) {
+  const terms = queryTerms(query);
+  if (!terms.length) return 0;
+  const text = normalize(candidate);
+  const hits = terms.filter((term) => text.includes(term)).length;
+  return hits / terms.length;
+}
+
+function makeSearchQuery(message: string) {
+  return message
+    .replace(/^(?:ما\s+هي|ما\s+هو|من\s+هي|من\s+هو|ماذا\s+عن|اشرح\s+لي|اشرح|حدثني\s+عن|ابحث\s+عن|شن\s+هي|شن\s+هو|شنو\s+هو|شنو\s+هي|من\s+تكون|ما\s+معنى)\s*/i, "")
+    .replace(/[؟?!،,؛;]+/g, " ")
+    .trim() || message;
+}
+
 async function wikipediaSearch(query: string, language: "ar" | "en") {
   const endpoint = new URL("https://" + language + ".wikipedia.org/w/api.php");
   endpoint.search = new URLSearchParams({
-    action: "query", list: "search", srsearch: query, srlimit: "3",
+    action: "query", list: "search", srsearch: query, srlimit: "6",
     format: "json", origin: "*",
   }).toString();
   const response = await fetch(endpoint, {
-    headers: { "User-Agent": "NOBIT-Knowledge/1.0 (independent educational project)" },
+    headers: { "User-Agent": "NOBIT-Knowledge/1.1 (independent educational project)" },
   });
   if (!response.ok) throw new Error("تعذر الوصول إلى ويكيبيديا (" + response.status + ").");
   const data = await response.json();
@@ -41,7 +77,7 @@ async function wikipediaExtract(titles: string[], language: "ar" | "en") {
     format: "json", origin: "*",
   }).toString();
   const response = await fetch(endpoint, {
-    headers: { "User-Agent": "NOBIT-Knowledge/1.0 (independent educational project)" },
+    headers: { "User-Agent": "NOBIT-Knowledge/1.1 (independent educational project)" },
   });
   if (!response.ok) throw new Error("تعذر جلب تفاصيل المقالات.");
   const data = await response.json();
@@ -58,46 +94,52 @@ async function wikidataSearch(query: string) {
   const endpoint = new URL("https://www.wikidata.org/w/api.php");
   endpoint.search = new URLSearchParams({
     action: "wbsearchentities", search: query, language: "ar", uselang: "ar",
-    type: "item", limit: "3", format: "json", origin: "*",
+    type: "item", limit: "5", format: "json", origin: "*",
   }).toString();
   const response = await fetch(endpoint, {
-    headers: { "User-Agent": "NOBIT-Knowledge/1.0 (independent educational project)" },
+    headers: { "User-Agent": "NOBIT-Knowledge/1.1 (independent educational project)" },
   });
   if (!response.ok) return [];
   const data = await response.json();
-  return (Array.isArray(data?.search) ? data.search : []).slice(0, 3).map((item: any) => ({
+  return (Array.isArray(data?.search) ? data.search : []).slice(0, 5).map((item: any) => ({
     title: clean(item.label, 160),
     description: clean(item.description, 300),
+    id: clean(item.id, 30),
     url: "https://www.wikidata.org/wiki/" + encodeURIComponent(clean(item.id, 30)),
-  })).filter((item: any) => item.title);
+  })).filter((item: any) => item.title && item.id);
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
   try {
     const body = await req.json();
     const message = clean(body.message, 1200);
     if (!message) return json({ error: "اكتبي سؤالاً أولاً." }, 400);
 
+    // Social messages should be handled by the conversation layer, not sent to search.
     if (/^(مرحبا|مرحباً|السلام عليكم|سلام|هلا|هاي|اهلا|أهلا|كيف حالك|كيفك|شن حالك|شن اخبارك|كيف الأحوال)[؟! .،]*$/i.test(message)) {
       const reply = /كيف حالك|كيفك|شن حالك|شن اخبارك|كيف الأحوال/i.test(message)
-        ? "أنا بخير وجاهز للبحث والتعلّم. كيف تسير الأمور عندك؟"
+        ? "أنا بخير وجاهز للمساعدة. كيف تسير الأمور عندك؟"
         : "مرحباً! أنا نوبيت. أستطيع البحث في مصادر المعرفة المفتوحة واسترجاع الدروس التي تعلّمينها لي.";
       return json({ reply, sources: [], mode: "conversation" });
     }
 
     const lessons = Array.isArray(body.lessons) ? body.lessons.slice(0, 50) : [];
-    const normalized = message.toLowerCase().replace(/[أإآ]/g, "ا").replace(/ى/g, "ي");
-    const terms = normalized.split(/\s+/).filter((word: string) => word.length > 2);
-    const lessonMatches = lessons.map((lesson: any) => {
-      const text = (clean(lesson.title, 180) + " " + clean(lesson.content, 1200)).toLowerCase()
-        .replace(/[أإآ]/g, "ا").replace(/ى/g, "ي");
-      const score = terms.reduce((sum: number, term: string) => sum + (text.includes(term) ? 1 : 0), 0);
-      return { lesson, score };
-    }).filter((item: any) => item.score > 0).sort((a: any, b: any) => b.score - a.score);
+    const query = makeSearchQuery(message);
+    const terms = queryTerms(query);
 
-    if (lessonMatches.length && lessonMatches[0].score >= 1) {
+    // Only use a taught lesson when several meaningful words match, reducing accidental matches.
+    const lessonMatches = lessons.map((lesson: any) => {
+      const title = clean(lesson.title, 180);
+      const content = clean(lesson.content, 1200);
+      const score = relevance(query, title + " " + content);
+      return { lesson, score };
+    }).filter((item: any) => item.score >= (terms.length > 1 ? 0.5 : 1))
+      .sort((a: any, b: any) => b.score - a.score);
+
+    if (lessonMatches.length) {
       const best = lessonMatches.slice(0, 2).map((item: any) =>
         "• " + clean(item.lesson.title, 180) + ": " + clean(item.lesson.content, 900)
       ).join("\n");
@@ -108,18 +150,37 @@ serve(async (req) => {
       });
     }
 
-    const query = message.replace(/^(ما هو|ما هي|من هو|من هي|اشرح|حدثني عن|ابحث عن|شن هو|شن هي|من تكون|ما معنى)\s*/i, "").trim() || message;
     let wikiResults = await wikipediaSearch(query, "ar");
     let language: "ar" | "en" = "ar";
     if (!wikiResults.length) {
       wikiResults = await wikipediaSearch(query, "en");
       language = "en";
     }
-    const titles = wikiResults.slice(0, 3).map((item: any) => String(item.title));
-    const [articles, entities] = await Promise.all([
+
+    const titles = wikiResults.slice(0, 6).map((item: any) => String(item.title));
+    const [rawArticles, rawEntities] = await Promise.all([
       wikipediaExtract(titles, language),
       wikidataSearch(query),
     ]);
+
+    // Re-rank by actual overlap with the question and discard unrelated search noise.
+    const articles = rawArticles
+      .map((item: any) => ({
+        ...item,
+        score: relevance(query, item.title + " " + item.extract),
+      }))
+      .filter((item: any) => item.score >= (terms.length > 1 ? 0.5 : 0.35))
+      .sort((a: any, b: any) => b.score - a.score)
+      .slice(0, 3);
+
+    const entities = rawEntities
+      .map((item: any) => ({
+        ...item,
+        score: relevance(query, item.title + " " + item.description),
+      }))
+      .filter((item: any) => item.score >= (terms.length > 1 ? 0.5 : 0.35))
+      .sort((a: any, b: any) => b.score - a.score)
+      .slice(0, 3);
 
     const sources = [
       ...articles.map((item: any) => ({ title: "Wikipedia: " + item.title, url: item.url })),
@@ -128,7 +189,7 @@ serve(async (req) => {
 
     if (!articles.length && !entities.length) {
       return json({
-        reply: "لم أعثر على نتيجة مناسبة في مصادر المعرفة المفتوحة التي أبحث فيها. جرّبي صياغة السؤال باسم أوضح أو بكلمات مختلفة. لن أخمّن الإجابة.",
+        reply: "لم أعثر على نتيجة مرتبطة بما يكفي بسؤالك في المصادر المفتوحة. جرّبي صياغة أوضح. لن أملأ الإجابة بمعلومات بعيدة عن الموضوع.",
         sources: [],
         mode: "no_results",
       });
@@ -145,7 +206,7 @@ serve(async (req) => {
     if (entityText) sections.push("بيانات تعريفية من ويكيداتا:\n" + entityText);
 
     return json({
-      reply: "وجدت معلومات مرتبطة بسؤالك في مصادر مفتوحة. هذه مقتطفات موثقة وليست استنتاجاً مولّداً؛ اقرئي المصادر المرتبطة للتحقق من التفاصيل.\n\n" + sections.join("\n\n"),
+      reply: "وجدت معلومات مرتبطة بسؤالك. رتّبت النتائج بحسب صلتها بالكلمات الأساسية، وما زالت هذه مقتطفات من المصادر وليست إجابة مولّدة.\n\n" + sections.join("\n\n"),
       sources,
       mode: "retrieval",
       language,
