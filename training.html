@@ -80,12 +80,11 @@
     try{
       setup(); const email=$("email").value.trim(), password=$("password").value, token=$("invite").value.trim();
       if(!email||password.length<8) throw new Error("أدخلي بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل.");
-      if(!token) throw new Error("رمز الدعوة مطلوب لإنشاء حساب متعاون. حساب المديرة يُفعّل يدوياً من SQL Editor.");
       const {data,error}=await client.auth.signUp({email,password});
       if(error) throw error;
-      sessionStorage.setItem("nobitPendingInvite",token);
-      if(data.session){ user=data.user; await redeemIfProvided(); await loadMember(); }
-      else say("authStatus","تم إنشاء الحساب. أكّدي بريدك الإلكتروني، ثم سجّلي الدخول وأدخلي رمز الدعوة نفسه لتفعيل العضوية.");
+      if(token) sessionStorage.setItem("nobitPendingInvite",token);
+      if(data.session){ user=data.user; if(token) await redeemIfProvided(); await loadMember(); }
+      else say("authStatus",token?"تم إنشاء الحساب. أكّدي بريدك الإلكتروني، ثم سجّلي الدخول وأدخلي رمز الدعوة نفسه لتفعيل العضوية.":"تم إنشاء الحساب. أكّدي بريدك الإلكتروني ثم سجّلي الدخول. تفعيل حساب المديرة يتم بخطوة إعداد منفصلة في Supabase.");
     }catch(e){say("authStatus",e.message||"تعذر إنشاء الحساب.",true);}
   }
   async function login(){
