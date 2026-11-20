@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#070c18;--panel:#101a2b;--panel2:#142238;--line:rgba(126,190,224,.16);--text:#e8f3ff;--muted:#8da5bd;--cyan:#66d9f2;--teal:#64e0c1;--pink:#d49bc5;--danger:#ff8292;--shadow:0 18px 55px rgba(0,0,0,.28)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#19314b 0,#0a1424 42%,var(--bg) 78%);color:var(--text);font-family:Tahoma,Arial,sans-serif;overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;background-image:radial-gradient(1px 1px at 12% 20%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 70% 14%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 84% 63%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 32% 78%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 55% 45%,#d7f5ff 99%,transparent);background-size:290px 260px;z-index:-1}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;background-image:radial-gradient(1px 1px at 12% 20%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 70% 14%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 84% 63%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 32% 78%,#d7f5ff 99%,transparent),radial-gradient(1px 1px at 55% 45%,#d7f5ff 99%,transparent);background-size:290px 260px;z-index:-1;animation:starDrift 110s linear infinite}@keyframes starDrift{from{background-position:0 0,0 0,0 0,0 0,0 0}to{background-position:420px 260px,-360px 300px,280px -340px,-240px -260px,180px 420px}}
 button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 .app{max-width:1180px;margin:auto;padding:22px 20px 105px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;border:1px solid #5abedb;color:var(--cyan);box-shadow:0 0 25px #3bbad733;font-size:22px}.brand-name{font-weight:800;letter-spacing:2px;font-size:19px}.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:3px}.top-actions{display:flex;align-items:center;gap:10px}.clock{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}.icon-btn,.ghost-btn{background:#132238;border:1px solid var(--line);color:var(--text);border-radius:13px;padding:10px 13px}.icon-btn:hover,.ghost-btn:hover{border-color:#5abedb}
 .page{display:none;animation:appear .25s ease}.page.active{display:block}@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -23,7 +23,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.setting-card{padding:20px}.setting-card h3{font-size:16px;margin:0 0 15px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}.setting-row:first-of-type{border-top:0}.setting-row strong{display:block;font-size:13px}.setting-row small{display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.6}.switch{appearance:none;width:43px;height:25px;border-radius:30px;background:#34465a;position:relative;flex:0 0 auto;transition:.2s}.switch:checked{background:#36a9bd}.switch:after{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:white;top:3px;right:3px;transition:.2s}.switch:checked:after{right:21px}
 .profile-card{display:flex;align-items:center;gap:17px}.avatar-wrap{width:90px;height:90px;border-radius:50%;border:2px solid #6acde0;padding:3px;overflow:hidden;background:#17283d;flex:0 0 auto;box-shadow:0 0 24px #54c5e333}.avatar-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%}.avatar-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#cbd8e4;font-size:42px;background:radial-gradient(circle at 50% 35%,#a9b7c5,#52677c 55%,#1c2b40)}.profile-meta h3{margin:0 0 6px}.profile-meta p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}.profile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.small-btn{background:#183149;border:1px solid var(--line);border-radius:11px;color:var(--text);padding:9px 12px;font-size:12px}.small-btn.danger{color:#ff9eaa;border-color:#82414d66}.hidden{display:none!important}.hint{font-size:11px;color:var(--muted);line-height:1.8}.form-stack{display:grid;gap:10px}.form-label{display:block;font-size:12px;color:#a9bfd2;margin-bottom:6px}.status-note{padding:11px;border-radius:12px;background:#12283a;color:#a8dce7;font-size:12px;line-height:1.7;margin-top:10px}.world-card{min-height:260px;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#163954 0,#0d1a2c 55%,#0a1322 100%)}.globe{font-size:85px;filter:drop-shadow(0 0 20px #45c9ed66)}
 .overlay{display:none;position:fixed;inset:0;background:#020812c9;z-index:40;align-items:center;justify-content:center;padding:18px}.overlay.open{display:flex}.modal{width:min(450px,100%);max-height:85vh;overflow:auto;background:#101d30;border:1px solid #4d7891;border-radius:22px;padding:22px;box-shadow:var(--shadow)}.modal h2{margin:0 0 15px}.modal p{color:var(--muted);line-height:1.8}.feeling-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.feeling-grid button{background:#193149;color:var(--text);border:1px solid var(--line);padding:13px;border-radius:13px}.close-row{text-align:left;margin-top:15px}
-@media(max-width:700px){.app{padding:15px 13px 100px}.hero{padding:22px;min-height:260px}.orbit-scene{width:145px;height:160px;flex-basis:145px;transform:scale(.72);margin-inline:-22px}.planet{width:120px;height:120px}.orbit{width:190px}.quick-grid{grid-template-columns:1fr}.quick-card{min-height:100px}.settings-grid{grid-template-columns:1fr}.clock{display:none}.hero h1{font-size:29px}.hero p{font-size:13px}.secondary-btn{margin:8px 0 0}.chat-panel{height:55vh}}
+@media(max-width:700px){.app{padding:15px 13px 100px}.hero{padding:22px;min-height:260px}.orbit-scene{width:145px;height:160px;flex-basis:145px;transform:scale(.72);margin-inline:-22px}.planet{width:120px;height:120px}.orbit{width:190px}.quick-grid{grid-template-columns:1fr}.quick-card{min-height:100px}.settings-grid{grid-template-columns:1fr}.clock{display:block;font-size:12px}.hero h1{font-size:29px}.hero p{font-size:13px}.secondary-btn{margin:8px 0 0}.chat-panel{height:55vh}}
 @media(max-width:390px){.orbit-scene{display:none}.hero{min-height:230px}.nav-btn{font-size:11px}}
 </style>
 </head>
@@ -44,15 +44,14 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
  <div class="quick-grid">
   <button class="quick-card" onclick="navigate('chat')"><div class="quick-icon">⌁</div><strong>المحادثة</strong><small>ابدأ الحديث مع نوبيت.</small></button>
   <button class="quick-card" onclick="navigate('world')"><div class="quick-icon">◎</div><strong>العالم</strong><small>مساحة استكشاف المعلومات والدول.</small></button>
-  <button class="quick-card" onclick="openFeelings()"><div class="quick-icon">♡</div><strong>المشاعر</strong><small>اختر شعورك واحصل على نصيحة.</small></button>
- </div>
+   </div>
 </section>
 
 <section class="page" id="chatPage">
  <div class="chat-layout"><h1 class="page-title">المحادثة</h1><p class="page-description">مساحة الحديث مع نوبيت.</p>
  <div class="chat-panel" id="chat"><div class="message ai">مرحباً، أنا نوبيت. ما الذي يدور في بالك اليوم؟</div></div>
  <div class="input-row"><input class="text-input" id="userInput" placeholder="اكتب رسالتك..." autocomplete="off"><button class="send" onclick="sendMessage()">إرسال</button></div>
- <div class="profile-actions"><button class="small-btn" onclick="toggleMusic()">♫ <span id="musicLabel">تشغيل الموسيقى</span></button><button class="small-btn" onclick="openFeelings()">♡ المشاعر</button><button class="small-btn" onclick="openInstructions()">إرشادات الاستخدام</button></div>
+ <div class="profile-actions"><button class="small-btn" onclick="toggleMusic()">♫ <span id="musicLabel">تشغيل الموسيقى</span></button><button class="small-btn" onclick="openInstructions()">إرشادات الاستخدام</button></div>
  </div>
 </section>
 
@@ -110,17 +109,11 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
  <div class="close-row"><button class="small-btn" onclick="closeOverlay('accountOverlay')">إغلاق</button></div>
 </div></div>
 
-<div class="overlay" id="feelingsOverlay" onclick="overlayClose(event,'feelingsOverlay')"><div class="modal">
- <h2>♡ كيف تشعر اليوم؟</h2><div class="feeling-grid">
- <button onclick="showTip('happy')">☀ سعيد</button><button onclick="showTip('sad')">🌧 حزين</button><button onclick="showTip('anxious')">🌿 متوتر</button><button onclick="showTip('scared')">🌙 خائف</button><button onclick="showTip('calm')">☕ هادئ</button><button onclick="showTip('lonely')">♡ وحيد</button>
- </div><div class="status-note hidden" id="tipBox"><strong id="tipTitle"></strong><div id="tipText"></div></div><div class="close-row"><button class="small-btn" onclick="closeOverlay('feelingsOverlay')">إغلاق</button></div>
-</div></div>
-
 <div class="overlay" id="instructionsOverlay" onclick="overlayClose(event,'instructionsOverlay')"><div class="modal">
  <h2>إرشادات الاستخدام</h2><p>يمكنك استخدام المحادثة للتجربة، وتغيير إعدادات الواجهة، واختيار صورة ملفك الشخصي. بعض الوظائف مثل الحساب السحابي والبحث العالمي ما زالت تحتاج إلى ربط خدماتها الخلفية.</p><div class="close-row"><button class="small-btn" onclick="closeOverlay('instructionsOverlay')">فهمت</button></div>
 </div></div>
 
-<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="tips.js"></script><script src="music.js"></script>
+<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="music.js"></script>
 <script>
 const NOBIT_PERSONALITY={name:"Nobit",identity:"أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور.",personality:["مشاغب بخفة","ساخر بلطف","فضولي","يعترف عندما لا يعرف"],behavior:["أجيب بوضوح","أمزح عندما يناسب الموقف","أكون جاداً في المواضيع الجادة","لا أخترع المعلومات"]};
 const settingDefaults={dynamicBackground:true,showClock:true,orbitMotion:true,reduceMotion:false,notifications:false};
@@ -141,9 +134,7 @@ function switchAuthMethod(){const phone=document.getElementById("authMethod").va
 function authNotice(){document.getElementById("authNotice").textContent="هذه الواجهة لا تنشئ حساباً بعد. الخطوة التالية هي إعداد Supabase Auth وتفعيل مزود SMS والتحقق من OTP قبل تشغيل التسجيل."}
 function overlayClose(e,id){if(e.target.id===id)closeOverlay(id)}
 function closeOverlay(id){document.getElementById(id).classList.remove("open")}
-function openFeelings(){document.getElementById("feelingsOverlay").classList.add("open");document.getElementById("tipBox").classList.add("hidden")}
 function openInstructions(){document.getElementById("instructionsOverlay").classList.add("open")}
-function showTip(feeling){const tip=typeof getTip==="function"?getTip(feeling):null;if(!tip)return;document.getElementById("tipTitle").textContent=tip.title;document.getElementById("tipText").textContent=tip.text;document.getElementById("tipBox").classList.remove("hidden")}
 function toggleMusic(){if(typeof startMusic!=="function")return;if(isMusicPlaying()){stopMusic()}else{startMusic()}updateMusicLabel()}
 function updateMusicLabel(){const playing=typeof isMusicPlaying==="function"&&isMusicPlaying();document.getElementById("musicLabel").textContent=playing?"إيقاف الموسيقى":"تشغيل الموسيقى";document.getElementById("musicEnabled").checked=playing}
 function toggleMusicFromSetting(v){if(v){startMusic()}else{stopMusic()}updateMusicLabel()}
