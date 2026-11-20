@@ -51,7 +51,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
  <div class="chat-layout"><h1 class="page-title">المحادثة</h1><p class="page-description">مساحة الحديث مع نوبيت.</p>
  <div class="chat-panel" id="chat"><div class="message ai">مرحباً، أنا نوبيت. ما الذي يدور في بالك اليوم؟</div></div>
  <div class="input-row"><input class="text-input" id="userInput" placeholder="اكتب رسالتك..." autocomplete="off"><button class="send" onclick="sendMessage()">إرسال</button></div>
- <div class="profile-actions"><button class="small-btn" onclick="toggleMusic()">♫ <span id="musicLabel">تشغيل الموسيقى</span></button><button class="small-btn" onclick="openInstructions()">إرشادات الاستخدام</button></div>
+ <div class="profile-actions"><button class="small-btn" onclick="openInstructions()">إرشادات الاستخدام</button></div>
  </div>
 </section>
 
@@ -78,7 +78,6 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
    <div class="setting-row"><div><strong>تقليل الحركة</strong><small>إيقاف الحركات لأداء أكثر هدوءاً.</small></div><input class="switch" id="reduceMotion" type="checkbox" onchange="setReducedMotion(this.checked)"></div>
   </div>
   <div class="panel setting-card"><h3>التفضيلات</h3>
-   <div class="setting-row"><div><strong>الموسيقى</strong><small>أجواء إلكترونية فضائية هادئة.</small></div><input class="switch" id="musicEnabled" type="checkbox" onchange="toggleMusicFromSetting(this.checked)"></div>
    <div class="setting-row"><div><strong>الإشعارات</strong><small>تفضيل الإشعارات (سيُربط لاحقاً).</small></div><input class="switch" id="notifications" type="checkbox" onchange="saveSetting('notifications',this.checked)"></div>
    <div class="setting-row"><div><strong>لغة الواجهة</strong><small>اللغة الحالية: العربية.</small></div><select class="field-select" style="width:112px;padding:8px" disabled><option>العربية</option></select></div>
   </div>
@@ -113,7 +112,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
  <h2>إرشادات الاستخدام</h2><p>يمكنك استخدام المحادثة للتجربة، وتغيير إعدادات الواجهة، واختيار صورة ملفك الشخصي. بعض الوظائف مثل الحساب السحابي والبحث العالمي ما زالت تحتاج إلى ربط خدماتها الخلفية.</p><div class="close-row"><button class="small-btn" onclick="closeOverlay('instructionsOverlay')">فهمت</button></div>
 </div></div>
 
-<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script><script src="music.js"></script>
+<script src="memory.js"></script><script src="brain.js"></script><script src="bridge.js"></script>
 <script>
 const NOBIT_PERSONALITY={name:"Nobit",identity:"أنا Nobit، ذكاء اصطناعي صغير يتعلم ويتطور.",personality:["مشاغب بخفة","ساخر بلطف","فضولي","يعترف عندما لا يعرف"],behavior:["أجيب بوضوح","أمزح عندما يناسب الموقف","أكون جاداً في المواضيع الجادة","لا أخترع المعلومات"]};
 const settingDefaults={dynamicBackground:true,showClock:true,orbitMotion:true,reduceMotion:false,notifications:false};
@@ -135,9 +134,6 @@ function authNotice(){document.getElementById("authNotice").textContent="هذه 
 function overlayClose(e,id){if(e.target.id===id)closeOverlay(id)}
 function closeOverlay(id){document.getElementById(id).classList.remove("open")}
 function openInstructions(){document.getElementById("instructionsOverlay").classList.add("open")}
-function toggleMusic(){if(typeof startMusic!=="function")return;if(isMusicPlaying()){stopMusic()}else{startMusic()}updateMusicLabel()}
-function updateMusicLabel(){const playing=typeof isMusicPlaying==="function"&&isMusicPlaying();document.getElementById("musicLabel").textContent=playing?"إيقاف الموسيقى":"تشغيل الموسيقى";document.getElementById("musicEnabled").checked=playing}
-function toggleMusicFromSetting(v){if(v){startMusic()}else{stopMusic()}updateMusicLabel()}
 function sendMessage(){const input=document.getElementById("userInput"),chat=document.getElementById("chat"),value=input.value.trim();if(!value)return;appendMessage(value,"user");input.value="";setTimeout(()=>{let answer=typeof brainReply==="function"?brainReply(value):null;if(!answer&&typeof memoryReply==="function")answer=memoryReply(value);if(!answer)answer=generateReply(value);appendMessage(answer,"ai")},250)}
 function appendMessage(text,kind){const chat=document.getElementById("chat"),el=document.createElement("div");el.className="message "+kind;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight}
 function generateReply(text){const m=text.toLowerCase();if(/مرحبا|سلام|هلا|هاي/.test(m))return"مرحباً. أنا نوبيت، ما الذي تريد استكشافه؟";if(/من انت|من أنت|مين انت|مين أنت/.test(m))return"أنا نوبيت. مساعد ذكي قيد التطوير، وأتعلم خطوة بخطوة.";if(/كيف حالك|شن حالك|كيفك/.test(m))return"النظام مستقر حتى الآن. وهذا خبر جيد للوحة التشغيل.";if(/رسم|ترسم/.test(m))return"الرسم مجال جميل. هل تعمل على فكرة جديدة؟";if(/ذكاء اصطناعي| ai/.test(m))return"الذكاء الاصطناعي مجال واسع، وما زلت أحتاج إلى تطوير قدراتي ومصادري.";return"لم أتعلم الإجابة عن هذا بعد. لن أخترع معلومة من عندي."}
