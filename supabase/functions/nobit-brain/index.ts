@@ -72,8 +72,9 @@ serve(async (req) => {
       { role: "user", content: message },
     ];
 
-    const model = Deno.env.get("OPENAI_MODEL") || "gpt-4.1-mini";
-    const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Responses API with hosted web search: current Libyan facts can be checked against live sources.
+    const model = Deno.env.get("OPENAI_MODEL") || "gpt-6.2-astra";
+    const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + apiKey,
@@ -81,10 +82,11 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model,
-        messages,
-        response_format: { type: "json_object" },
-        temperature: 0.6,
-        max_tokens: 900,
+        input: messages,
+        tools: [{ type: "web_search", search_context_size: "medium" }],
+        tool_choice: "auto",
+        text: { format: { type: "json_object" } },
+        max_output_tokens: 1400,
       }),
     });
 
@@ -94,7 +96,27 @@ serve(async (req) => {
       return json({ error: detail }, upstream.status === 429 ? 429 : 502);
     }
 
-    const raw = result?.choices?.[0]?.message?.content || "{}";
+    const outputItems = Array.isArray(result.output) ? result.output : [];
+    const textParts: string[] = [];
+    const sourceMap = new Map<string, { title: string; url: string }>();
+    for (const item of outputItems) {
+      if (item.type !== "message" || !Array.isArray(item.content)) continue;
+      for (const part of item.content) {
+        if (part.type === "output_text" && typeof part.text === "string") {
+          textParts.push(part.text);
+          for (const annotation of (Array.isArray(part.annotations) ? part.annotations : [])) {
+            const url = String(annotation.url || annotation.url_citation?.url || "");
+            if (/^https:\/\//i.test(url)) {
+              sourceMap.set(url, {
+                title: String(annotation.title || annotation.url_citation?.title || url).slice(0, 180),
+                url,
+              });
+            }
+          }
+        }
+      }
+    }
+    const raw = textParts.join("\\n").trim() || "{}";
     let parsed: any;
     try { parsed = JSON.parse(raw); }
     catch { parsed = { reply: raw, lessons_to_save: [] }; }
@@ -111,6 +133,7 @@ serve(async (req) => {
     return json({
       reply: String(parsed.reply || "لم أتمكن من صياغة رد مناسب.").slice(0, 6000),
       lessons_to_save: candidates,
+      sources: Array.from(sourceMap.values()).slice(0, 8),
       model,
     });
   } catch (error) {
