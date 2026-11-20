@@ -24,6 +24,8 @@
       return true;
     },
     async chat(message, history = []) {
+      const safety = globalThis.NobitSafety?.inspect(message);
+      if (safety && !safety.allowed) return {reply:safety.reply, sources:[], mode:"safety_block"};
       const c = readConfig();
       if (!c.projectUrl || !c.anonKey) throw new Error("لم يتم إعداد اتصال Supabase بعد.");
       const lessons = window.NobitLearning ? NobitLearning.all().slice(0, 50) : [];
