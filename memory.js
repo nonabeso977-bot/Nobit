@@ -8,6 +8,9 @@ const NobitMemory = {
 
     save(key, value) {
 
+        const safety = globalThis.NobitSafety?.inspect(value, { strict: true });
+        if (safety && !safety.allowed) return false;
+
         this.data[key] = value;
 
         localStorage.setItem(
@@ -76,6 +79,9 @@ NobitMemory.load();
    ======================================== */
 
 function memoryReply(text) {
+
+    const safety = globalThis.NobitSafety?.inspect(text);
+    if (safety && !safety.allowed) return safety.reply;
 
     const originalText = text.trim();
     const lower = originalText.toLowerCase();
