@@ -22,7 +22,9 @@ const NobitMemory = {
 
     get(key) {
 
-        return this.data[key];
+        const value = this.data[key];
+        const safety = globalThis.NobitSafety?.inspect(value, { strict: true });
+        return safety && !safety.allowed ? null : value;
 
     },
 
@@ -53,7 +55,13 @@ const NobitMemory = {
 
             try {
 
-                this.data = JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                this.data = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? Object.fromEntries(
+                    Object.entries(parsed).filter(([key, value]) => {
+                        const safety = globalThis.NobitSafety?.inspect(value, { strict: true });
+                        return !safety || safety.allowed;
+                    })
+                ) : {};
 
             } catch {
 
